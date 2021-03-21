@@ -1,5 +1,4 @@
 import React from 'react';
-import { GameOfLifeBoard } from '../../models/game-of-life-board';
 import GameBoardCell from '../GameBoardCell/GameBoardCell';
 import styles from './GameBoard.module.scss';
 

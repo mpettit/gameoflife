@@ -1,6 +1,9 @@
+
+$cell-dimension: 10px;
+
 .cell {
-    width: 10px;
-    height: 10px;
+    width: $cell-dimension;
+    height: $cell-dimension;
     border: 1px solid black;
 
     &Alive {

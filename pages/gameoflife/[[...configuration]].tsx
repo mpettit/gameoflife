@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GameBoard from '../../components/GameBoard/GameBoard';
-import {
-    GameOfLifeBoard,
-} from '../../models/game-of-life-board';
+import { GameOfLifeBoard } from '../../models/game-of-life-board';
 
 interface GameOfLifeProps {
     initialAlive?: GameBoardCoordinate[];
@@ -10,28 +8,31 @@ interface GameOfLifeProps {
     width?: number;
 }
 
-const DEFAULT_HEIGHT = 50;
-const DEFAULT_WIDTH = 50;
+const DEFAULT_HEIGHT = 100;
+const DEFAULT_WIDTH = 100;
 
 export default function GameOfLife({
     initialAlive,
     height,
     width,
 }: GameOfLifeProps): JSX.Element {
-
-    const initialGameBoard = new GameOfLifeBoard(height || DEFAULT_HEIGHT, width || DEFAULT_WIDTH, initialAlive);
+    const initialGameBoard = new GameOfLifeBoard(
+        height || DEFAULT_HEIGHT,
+        width || DEFAULT_WIDTH,
+        initialAlive
+    );
     const [gameBoard, setGameBoard] = useState(initialGameBoard);
 
     useEffect(() => {
-      const intervalId = setInterval(() => {
-          // process next generation on every new interval
-          setGameBoard(prev => prev.getNextGenerationBoard());
-      }, 300); //TODO: add optional speeds in a menu?
+        const intervalId = setInterval(() => {
+            // process next generation on every new interval
+            setGameBoard((prev) => prev.getNextGenerationBoard());
+        }, 1000); //TODO: add optional speeds in a menu?
 
-      return () => {
-        clearInterval(intervalId);
-      }
-  }, []);
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
 
     return (
         <div>
@@ -43,14 +44,15 @@ export default function GameOfLife({
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-    const configuration = params.configuration;
+    const _configuration = params.configuration;
 
     // TODO: get board for configuration instead of faking here
     const initialAlive = [];
-    for(let i = 0; i < 50; i++) {
-        initialAlive.push([i,i]);
-        // initialAlive.push([i/2,i]);
-        // initialAlive.push([i,i/2]);
+    for (let i = 0; i < 5000; i++) {
+        initialAlive.push([
+            randomNumber(0, DEFAULT_HEIGHT),
+            randomNumber(0, DEFAULT_WIDTH),
+        ]);
     }
 
     const height = null;
@@ -64,3 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
         },
     };
 };
+
+function randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}

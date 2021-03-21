@@ -44,7 +44,7 @@ export class GameOfLifeBoard {
     }
 
     reset(): void {
-        this._board = this.initializeEmptyBoard(
+        this._board = this.initializeEmptyBoard(    //TODO: not sure if this does anything
             this._board.length,
             this._board[0].length
         );
