@@ -1,0 +1,31 @@
+{
+  "name": "gameoflife",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ./**/*.ts*",
+    "lint:fix": "eslint --fix ./**/*.ts*"
+  },
+  "dependencies": {
+    "antd": "^4.14.0",
+    "next": "10.0.9",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "sass": "^1.32.8"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "@types/react": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "prettier": "^2.2.1",
+    "prettier-eslint": "^12.0.0",
+    "typescript": "^4.2.3"
+  }
+}

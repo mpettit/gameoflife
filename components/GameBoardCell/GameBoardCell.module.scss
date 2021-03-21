@@ -1,0 +1,15 @@
+.cell {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+
+    &Alive {
+        @extend .cell;
+        background-color: black;
+    }
+
+    &Dead {
+        @extend .cell;
+        background-color: white;
+    }
+}
