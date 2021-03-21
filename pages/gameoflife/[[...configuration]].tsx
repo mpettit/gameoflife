@@ -4,9 +4,9 @@ import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
 import { GameOfLifeOptions } from '../../models/game-of-life-options';
 
 
-const CELL_DIMENSION = 3;
-const CANVAS_DIMENSION = 200;
-const EVOLUTION_INTERVAL = 100;
+const CELL_DIMENSION = 1;
+const CANVAS_DIMENSION = 500;
+const EVOLUTION_INTERVAL = 50;
 
 interface GameOfLifeProps {
     initialAlive?: GameBoardCoordinate[];
@@ -27,6 +27,8 @@ export default function GameOfLife({
         cellOptions: {
             aliveColor: 'red',
             visitedColor: 'pink',
+            deadColor: 'white',
+            showVisited: true,
             cellSize: CELL_DIMENSION,
         }
     }

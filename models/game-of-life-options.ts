@@ -10,5 +10,7 @@ export interface GameOfLifeOptions {
 export interface GameOfLifeCellOptions {
     aliveColor: string,
     visitedColor: string,
+    deadColor: string,
+    showVisited: boolean,
     cellSize: number,
 }

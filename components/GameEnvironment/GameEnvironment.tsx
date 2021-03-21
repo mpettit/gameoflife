@@ -1,21 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,  useRef } from 'react';
 import styles from './GameEnvironment.module.scss';
-import { fabric } from 'fabric';
 import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
 import { GameOfLifeOptions } from '../../models/game-of-life-options';
 
 export default function GameEnvironment({ gameOptions }: { gameOptions: GameOfLifeOptions }): JSX.Element {
   
+    const canvasRef = useRef()
     const [height, width] = gameOptions.environmentDimensions;
-    const transformCanvas = { transformOrigin: '0 0', transform: `scale(${gameOptions.cellOptions.cellSize})`}
 
     useEffect(() => {
 
-        const staticCanvas = new fabric.StaticCanvas('gameoflife', {
-            renderOnAddRemove: false,
-        })
+        const canvas = canvasRef.current
+        const canvasContext = canvas.getContext('2d')
 
-        const gameEnvironment = new GameOfLifeEnvironment(staticCanvas, gameOptions);
+        const gameEnvironment = new GameOfLifeEnvironment(canvasContext, gameOptions);
         gameEnvironment.draw();
 
         const intervalId = setInterval(() => {
@@ -27,7 +25,7 @@ export default function GameEnvironment({ gameOptions }: { gameOptions: GameOfLi
 
     return (
         <div className={styles.boardContainer}>
-            <canvas id="gameoflife" height={height * gameOptions.cellOptions.cellSize} width={width * gameOptions.cellOptions.cellSize} style={transformCanvas} />
+            <canvas ref={canvasRef} id="gameoflife" height={height * gameOptions.cellOptions.cellSize} width={width * gameOptions.cellOptions.cellSize} />
         </div>
     );
 }
