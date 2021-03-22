@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     const initialAlive = [];
     for (let i = 0; i < CANVAS_DIMENSION; i++) {
         for (let j = 0; j < CANVAS_DIMENSION; j++) {
-            if (Math.random() > 0.5) {
+            if (Math.random() < 0.33) {
                 initialAlive.push([i, j]);
             }
         }
