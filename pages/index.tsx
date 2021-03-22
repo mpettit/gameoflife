@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { Button } from 'antd';
+import { Button  } from 'antd';
 import Image from 'next/image';
 import LandingLayout from '../components/LandingLayout/LandingLayout';
 import styles from './index.module.scss';

@@ -1,5 +1,5 @@
 import { GameofLifeCell } from './game-of-life-cell';
-import { GameOfLifeOptions } from './game-of-life-options';
+import { GameOfLifeSettings } from './game-of-life-settings';
 
 export class GameOfLifeEnvironment {
     private _cells: GameofLifeCell[];
@@ -8,21 +8,21 @@ export class GameOfLifeEnvironment {
     private readonly _canvasDimensions: [number, number];
     private readonly _generation: number;
 
-    constructor(context: CanvasRenderingContext2D, environmentOptions: GameOfLifeOptions) {
-        const [height, width] = environmentOptions.environmentDimensions;
-        const cellSize = environmentOptions.cellOptions.cellSize;
+    constructor(context: CanvasRenderingContext2D, environmentSettings: GameOfLifeSettings) {
+        const [height, width] = environmentSettings.environmentDimensions;
+        const cellSize = environmentSettings.cellSettings.cellSize;
         this._context = context;
-        this._dimensions = environmentOptions.environmentDimensions;
+        this._dimensions = environmentSettings.environmentDimensions;
         this._canvasDimensions = [height * cellSize, width * cellSize];
         this._generation = 0;
         this._cells = [];
 
         for (let rowIndex = 0; rowIndex < height; rowIndex++) {
             for (let colIndex = 0; colIndex < width; colIndex++) {
-                this._cells.push(new GameofLifeCell(false, [rowIndex, colIndex], [height, width], environmentOptions.cellOptions));
+                this._cells.push(new GameofLifeCell(false, [rowIndex, colIndex], [height, width], environmentSettings.cellSettings));
             }
         }
-        this.applyAliveCoordinates(environmentOptions.initialAliveCongiguration, height, width);
+        this.applyAliveCoordinates(environmentSettings.initialAliveCongiguration, height, width);
     }
 
     getGeneration(): number {

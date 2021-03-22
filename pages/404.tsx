@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { Result, Button } from 'antd';
 import { FrownTwoTone } from '@ant-design/icons';
-import Layout from '../components/Layout/Layout';
+import PageLayout from '../components/PageLayout/PageLayout';
 
 export default function FourOhFour(): JSX.Element {
     const router = useRouter();
@@ -12,7 +12,7 @@ export default function FourOhFour(): JSX.Element {
     }
 
     return (
-        <Layout>
+        <PageLayout>
             <Result
                 icon={<FrownTwoTone />}
                 title="404"
@@ -23,6 +23,6 @@ export default function FourOhFour(): JSX.Element {
                     </Button>
                 }
             />
-        </Layout>
+        </PageLayout>
     );
 }

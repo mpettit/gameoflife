@@ -1,4 +1,4 @@
-import { GameOfLifeCellOptions } from './game-of-life-options';
+import { GameOfLifeCellSettings } from './game-of-life-settings';
 
 export type EnvironmentCoordinate = [number, number];
 
@@ -6,7 +6,7 @@ export class GameofLifeCell {
     private _isAlive: boolean;
     private _prevIsAlive: boolean;
     private _isVisited: boolean;
-    private _cellOptions: GameOfLifeCellOptions;
+    private _cellSettings: GameOfLifeCellSettings;
     private readonly _coordinates: EnvironmentCoordinate;
     private readonly _neighbors: EnvironmentCoordinate[];
 
@@ -14,12 +14,12 @@ export class GameofLifeCell {
         isAlive: boolean,
         coordinates: EnvironmentCoordinate,
         environmentDimensions: EnvironmentCoordinate,
-        cellOptions: GameOfLifeCellOptions
+        cellSettings: GameOfLifeCellSettings
     ) {
         this._isAlive = isAlive;
         this._prevIsAlive = false;
         this._isVisited = isAlive;
-        this._cellOptions = cellOptions;
+        this._cellSettings = cellSettings;
         this._coordinates = coordinates;
 
         const [row, column] = coordinates;
@@ -64,7 +64,7 @@ export class GameofLifeCell {
         const [row, column] = this._coordinates;
         if (this._isAlive != this._prevIsAlive) {
             // only draw differences
-            const cellSize = this._cellOptions.cellSize;
+            const cellSize = this._cellSettings.cellSize;
             context.fillStyle = this.getCellColor();
             context.fillRect(row * cellSize, column * cellSize, cellSize, cellSize);
             this._prevIsAlive = this._isAlive;
@@ -73,10 +73,10 @@ export class GameofLifeCell {
 
     private getCellColor(): string {
         if (this._isAlive) {
-            return this._cellOptions.aliveColor;
-        } else if (this._cellOptions.showVisited && this._isVisited) {
-            return this._cellOptions.visitedColor;
+            return this._cellSettings.aliveColor;
+        } else if (this._cellSettings.showVisited && this._isVisited) {
+            return this._cellSettings.visitedColor;
         }
-        return this._cellOptions.deadColor;
+        return this._cellSettings.deadColor;
     }
 }
