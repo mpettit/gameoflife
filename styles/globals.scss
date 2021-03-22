@@ -1,18 +1,48 @@
 @import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
+@import './variables.scss';
+
+// Light
+@font-face {
+    font-family: 'Kayak Sans';
+    src: url('/fonts/Kayak%20Sans/Kayak%20Sans%20Light.otf');
+    font-style: normal;
+    font-weight: lighter;
+    font-display: block;
+}
+// Regular
+@font-face {
+    font-family: 'Kayak Sans';
+    src: url('/fonts/Kayak%20Sans/Kayak%20Sans%20Regular.otf');
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+}
+// Bold
+@font-face {
+    font-family: 'Kayak Sans';
+    src: url('/fonts/Kayak%20Sans/Kayak%20Sans%20Bold.otf');
+    font-style: normal;
+    font-weight: bold;
+    font-display: block;
+}
 
 html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+body,
+#__next {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    font-family: 'Kayak Sans';
+    color: $primary;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }

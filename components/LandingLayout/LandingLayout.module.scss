@@ -1,0 +1,24 @@
+@import '../../styles/variables.scss';
+
+.container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+
+    .titleContainer {
+        display: flex;
+        flex-grow: 1;
+        align-items: center;
+        justify-content: center;
+        background-color: $primary;
+        box-shadow: $box-shadow;
+    }
+
+    .bodyContainer {
+        display: flex;
+        flex-grow: 3;
+        justify-content: center;
+    }
+}
+

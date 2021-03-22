@@ -1,0 +1,61 @@
+@import '../styles/variables.scss';
+
+$logo-size: 100px;
+$logo-margin: 15px;
+
+.container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+}
+
+.titleContainer {
+    @extend .container;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-left: calc((#{$logo-size} + (#{$logo-margin} * 2)) * -1);
+    margin-top: 25px;
+
+
+    .titleLogoContainer {
+        margin: $logo-margin;
+    }
+
+    .titleTextContainer {
+        margin-top: 25px;
+
+        .titleText {
+            font-size: 50px;
+            font-weight: bold;
+            color: $white;
+        }
+
+        .subtitleText {
+            font-size: 15px;
+            margin-top: -15px;
+            color: $secondary;
+        }
+    }
+}
+
+.bodyContainer {
+    @extend .container;
+    margin-top: 35px;
+
+
+    .text {
+        font-size: 15px;
+        margin: 10px
+    }
+
+    .buttonContainer {
+        
+        .actionButton {
+            margin:15px;
+        };
+
+    }
+}

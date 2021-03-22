@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
-import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
 import { GameOfLifeOptions } from '../../models/game-of-life-options';
+import Layout from '../../components/Layout/Layout';
 
-
-const CELL_DIMENSION = 1;
-const CANVAS_DIMENSION = 500;
+const CELL_DIMENSION = 3;
+const CANVAS_DIMENSION = 50;
 const EVOLUTION_INTERVAL = 50;
 
 interface GameOfLifeProps {
@@ -14,30 +13,24 @@ interface GameOfLifeProps {
     width?: number;
 }
 
-export default function GameOfLife({
-    initialAlive,
-    height,
-    width,
-}: GameOfLifeProps): JSX.Element {
-
+export default function GameOfLife({ initialAlive, height, width }: GameOfLifeProps): JSX.Element {
     const gameOptions: GameOfLifeOptions = {
         environmentDimensions: [height || CANVAS_DIMENSION, width || CANVAS_DIMENSION],
         evolutionInterval: EVOLUTION_INTERVAL,
         initialAliveCongiguration: initialAlive,
         cellOptions: {
-            aliveColor: 'red',
-            visitedColor: 'pink',
+            aliveColor: '#FFA101',
+            visitedColor: '#FAE6B1',
             deadColor: 'white',
-            showVisited: true,
+            showVisited: false,
             cellSize: CELL_DIMENSION,
-        }
-    }
+        },
+    };
 
     return (
-        <div>
-            <h1>Game of Life!</h1>
-            <GameEnvironment gameOptions={gameOptions}/>
-        </div>
+        <Layout>
+            <GameEnvironment gameOptions={gameOptions} />
+        </Layout>
     );
 }
 
@@ -46,11 +39,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
     // TODO: get board for configuration instead of faking here
     const initialAlive = [];
-    for (let i = 0; i < (CANVAS_DIMENSION * CANVAS_DIMENSION); i++) {
-        initialAlive.push([
-            randomNumber(0, CANVAS_DIMENSION),
-            randomNumber(0, CANVAS_DIMENSION),
-        ]);
+    for (let i = 0; i < CANVAS_DIMENSION; i++) {
+        for (let j = 0; j < CANVAS_DIMENSION; j++) {
+            if (Math.random() > 0.5) {
+                initialAlive.push([i, j]);
+            }
+        }
     }
 
     const height = null;
@@ -64,7 +58,3 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
         },
     };
 };
-
-function randomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-}
