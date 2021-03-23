@@ -19,7 +19,7 @@ export class GameOfLifeEnvironment {
 
         for (let rowIndex = 0; rowIndex < height; rowIndex++) {
             for (let colIndex = 0; colIndex < width; colIndex++) {
-                this._cells.push(new GameofLifeCell(false, [rowIndex, colIndex], [height, width], environmentSettings.cellSettings));
+                this._cells.push(new GameofLifeCell([rowIndex, colIndex], [height, width], environmentSettings.cellSettings));
             }
         }
         this.applyAliveCoordinates(environmentSettings.initialAliveCongiguration, height, width);
@@ -34,15 +34,19 @@ export class GameOfLifeEnvironment {
             const aliveNeighbors = cell
                 .getNeighborCoordinates()
                 .filter(([neighborRow, neighborColumn]) => this.getCell(neighborRow, neighborColumn)?.isAlive() || false).length;
-
+           
             if ((cell.isAlive() && aliveNeighbors === 2) || aliveNeighbors === 3) {
                 // alive cells with 2 or 3 alive neighbors survive
                 // other alive cells die from either underpopulation or overpopulation
                 // dead cells with 3 neighbors become alive through reproduction
-                cell.setIsAlive(true);
+                cell.setNextIsAlive(true);
             } else {
-                cell.setIsAlive(false);
+                cell.setNextIsAlive(false);
             }
+            return cell;
+        })
+        .map(cell => {
+            cell.evolve();
             return cell;
         });
         this._generation++;
@@ -50,10 +54,6 @@ export class GameOfLifeEnvironment {
         if (redraw) {
             this.draw();
         }
-    }
-
-    isExtinct(): boolean {
-        return this._cells.filter((cell) => cell.isAlive()).length > 0;
     }
 
     draw(): void {
@@ -86,7 +86,11 @@ export class GameOfLifeEnvironment {
 
         validAliveCoords.forEach((aliveCoord: EnvironmentCoordinate) => {
             const [row, column] = aliveCoord;
-            this.getCell(row, column)?.setIsAlive(true);
+            const cell = this.getCell(row, column);
+            if (cell) {
+                cell.setNextIsAlive(true);
+                cell.evolve();
+            }
         });
     }
 }

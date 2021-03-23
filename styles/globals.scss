@@ -35,7 +35,6 @@ body,
     flex-direction: column;
     flex: 1;
     font-family: 'Kayak Sans';
-    color: $primary;
 }
 
 a {
@@ -45,4 +44,12 @@ a {
 
 * {
     box-sizing: border-box;
+}
+
+// ant ovrerides
+.ant-popover-inner-content {
+    padding: 0;
+}
+.ant-switch-checked {
+    background-color: $primary;
 }

@@ -11,20 +11,33 @@ const initialState: GameOfLifeSettingsState = {
     isLoaded: false,
 };
 
-// Use the initialState as a default value
 export default function settingsReducer(state = initialState, action: AnyAction): GameOfLifeSettingsState {
-    // The reducer normally looks at the action type field to decide what happens
     switch (action.type) {
-        // Do something here based on the different types of actions
         case GameOfLifeSettingsAction.SetSettings:
             return {
                 ...state,
                 ...action.payload,
                 isLoaded: true,
             };
+        case GameOfLifeSettingsAction.ChangeSetting:
+            return {
+                ...state,
+                ...action.payload,
+            };
+        case GameOfLifeSettingsAction.ChangeCellSetting:
+            return {
+                ...state,
+                cellSettings: {
+                    ...state.cellSettings,
+                    ...action.payload,
+                },
+            };
+        case GameOfLifeSettingsAction.SetIsLoaded:
+            return {
+                ...state,
+                isLoaded: action.payload,
+            };
         default:
-            // If this reducer doesn't recognize the action type, or doesn't
-            // care about this specific action, return the existing state unchanged
             return state;
     }
 }

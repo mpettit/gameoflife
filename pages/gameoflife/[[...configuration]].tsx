@@ -6,9 +6,10 @@ import { Button, Drawer, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
 import { setGameOfLifeSettings } from '../../store/settings/settingsActions';
+import GameOptionForm from '../../components/GameOptionForm/GameOptionForm';
 
-const CELL_DIMENSION = 3;
-const CANVAS_DIMENSION = 50;
+const CELL_DIMENSION = 2;
+const CANVAS_DIMENSION = 200;
 const EVOLUTION_INTERVAL = 50;
 
 interface GameOfLifeProps {
@@ -24,7 +25,7 @@ export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): JS
 
     useEffect(() => {
         if (initialGameSettings !== undefined) {
-            dispatch(setGameOfLifeSettings(initialGameSettings))
+            dispatch(setGameOfLifeSettings(initialGameSettings));
         } else {
             // open settings modal if no settings
             setIsModalVisible(true);
@@ -61,6 +62,7 @@ export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): JS
             <Button type="primary" shape="round" onClick={() => setIsDrawerVisible(true)}>
                 open drawer
             </Button>
+            <GameOptionForm />
         </PageLayout>
     );
 }
@@ -72,7 +74,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     const initialAlive = [];
     for (let i = 0; i < CANVAS_DIMENSION; i++) {
         for (let j = 0; j < CANVAS_DIMENSION; j++) {
-            if (Math.random() < 0.33) {
+            if (Math.random() < 0.15) {
+            // if (i==j){
                 initialAlive.push([i, j]);
             }
         }
@@ -86,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
             aliveColor: '#FFA101',
             visitedColor: '#FAE6B1',
             deadColor: 'white',
-            showVisited: false,
+            showVisited: true,
             cellSize: CELL_DIMENSION,
         },
     };

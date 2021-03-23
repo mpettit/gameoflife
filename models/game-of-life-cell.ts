@@ -4,21 +4,22 @@ export type EnvironmentCoordinate = [number, number];
 
 export class GameofLifeCell {
     private _isAlive: boolean;
-    private _prevIsAlive: boolean;
+    private _nextIsAlive: boolean;
     private _isVisited: boolean;
+    private _requiresRedraw: boolean;
     private _cellSettings: GameOfLifeCellSettings;
     private readonly _coordinates: EnvironmentCoordinate;
     private readonly _neighbors: EnvironmentCoordinate[];
 
     constructor(
-        isAlive: boolean,
         coordinates: EnvironmentCoordinate,
         environmentDimensions: EnvironmentCoordinate,
         cellSettings: GameOfLifeCellSettings
     ) {
-        this._isAlive = isAlive;
-        this._prevIsAlive = false;
-        this._isVisited = isAlive;
+        this._isAlive = false;
+        this._nextIsAlive = false;
+        this._isVisited = false;
+        this._requiresRedraw = false;
         this._cellSettings = cellSettings;
         this._coordinates = coordinates;
 
@@ -46,10 +47,14 @@ export class GameofLifeCell {
         return this._isAlive;
     }
 
-    setIsAlive(isAlive: boolean): void {
-        this._prevIsAlive = this._isAlive;
-        this._isAlive = isAlive;
-        this._isVisited = this._isVisited || isAlive;
+    setNextIsAlive(nextIsAlive: boolean): void {    //wont take effect until next evolution cycle triggered via .evolve()
+        this._nextIsAlive = nextIsAlive;
+    }
+
+    evolve(): void {
+        this._requiresRedraw = this._nextIsAlive !== this._isAlive;
+        this._isAlive = this._nextIsAlive;
+        this._isVisited = this._isVisited || this._nextIsAlive;
     }
 
     isVisited(): boolean {
@@ -62,12 +67,10 @@ export class GameofLifeCell {
 
     draw(context: CanvasRenderingContext2D): void {
         const [row, column] = this._coordinates;
-        if (this._isAlive != this._prevIsAlive) {
-            // only draw differences
+        if (this._requiresRedraw) {             // only draw differences
             const cellSize = this._cellSettings.cellSize;
             context.fillStyle = this.getCellColor();
             context.fillRect(row * cellSize, column * cellSize, cellSize, cellSize);
-            this._prevIsAlive = this._isAlive;
         }
     }
 
