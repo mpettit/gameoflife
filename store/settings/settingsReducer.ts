@@ -19,8 +19,6 @@ const initialState: GameOfLifeSettingsState = {
 };
 
 export default function settingsReducer(state = initialState, action: AnyAction): GameOfLifeSettingsState {
-    console.log("New settings action");
-    console.log(action);
     switch (action.type) {
         case GameOfLifeSettingsActionType.ChangeSetting:
             return {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Modal } from 'antd';
 import { useDispatch } from 'react-redux';
-import { setGameOfLifeSettings, setIsLoaded } from '../store/settings/settingsActions';
+import { changeSetting } from '../store/settings/settingsActions';
 import Image from 'next/image';
 import LandingLayout from '../components/LandingLayout/LandingLayout';
 import GameSettingsForm from '../components/GameSettingsForm/GameSettingsForm';
@@ -15,7 +15,7 @@ export default function StartMenu(): React.FC {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     function applySettingsAndContinue(newSettings: GameOfLifeSettings) {
-        dispatch(setGameOfLifeSettings(newSettings));
+        dispatch(changeSetting(newSettings));
         router.push('/gameoflife');
     }
 

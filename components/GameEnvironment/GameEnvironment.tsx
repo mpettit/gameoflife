@@ -75,9 +75,7 @@ export default function GameEnvironment(): React.FC {
     }
 
     function handleGameResetting(): void {
-        console.log(gameSettings);
-        console.log(canvasHeight + " " + canvasWidth);
-
+        console.log('resetting');
         prepareCanvas();
         const newEnvironment = new GameOfLifeEnvironment(getCanvasContext(), gameSettings);
         newEnvironment.draw();
