@@ -7,12 +7,22 @@ export interface GameOfLifeSettingsState extends GameOfLifeSettings {
 }
 
 const initialState: GameOfLifeSettingsState = {
-    cellSettings: {},
+    cellSettings: {
+        cellSize: 3,
+        aliveColor: '#FFA101',
+        deadColor: '#FFFFFF',
+        visitedColor: '#FAE6B1',
+        showVisited: true,
+    },
+    environmentHeight: 100,
+    environmentWidth: 100,
+    evolutionInterval: 100,
     initialAliveConfiguration: [],
     isLoaded: false,
 };
 
 export default function settingsReducer(state = initialState, action: AnyAction): GameOfLifeSettingsState {
+    console.log(action);
     switch (action.type) {
         case GameOfLifeSettingsAction.SetSettings:
             return {

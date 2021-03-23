@@ -70,7 +70,7 @@ export class GameofLifeCell {
         if (this._requiresRedraw) {             // only draw differences
             const cellSize = this._cellSettings.cellSize;
             context.fillStyle = this.getCellColor();
-            context.fillRect(this._row * cellSize, this._column * cellSize, cellSize, cellSize);
+            context.fillRect(this._column * cellSize, this._row * cellSize, cellSize, cellSize);
         }
     }
 

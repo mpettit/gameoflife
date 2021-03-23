@@ -80,17 +80,6 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
             </Row>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Dead Cell Color:
-                </Col>
-                <Col span={formLayoutSpan.input} className={styles.formInput}>
-                    <ColorInput
-                        color={formValues.cellSettings?.deadColor}
-                        onChange={(deadColor) => setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, deadColor } }))}
-                    />
-                </Col>
-            </Row>
-            <Row className={styles.formElement}>
-                <Col span={formLayoutSpan.label} className={styles.formLabel}>
                     Show Visited Cells:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>

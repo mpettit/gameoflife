@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Button  } from 'antd';
+import { Button, Modal } from 'antd';
+import { useDispatch } from 'react-redux';
+import { setGameOfLifeSettings, setIsLoaded } from '../store/settings/settingsActions';
 import Image from 'next/image';
 import LandingLayout from '../components/LandingLayout/LandingLayout';
+import GameSettingsForm from '../components/GameSettingsForm/GameSettingsForm';
 import styles from './index.module.scss';
 
 export default function StartMenu(): React.FC {
     const router = useRouter();
+    const dispatch = useDispatch();
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    function applySettings(newSettings: GameOfLifeSettings) {
+        dispatch(setGameOfLifeSettings(newSettings));
+        // dispatch(setIsLoaded(true));
+        router.push('/gameoflife');
+    }
 
     return (
         <LandingLayout>
@@ -33,11 +45,19 @@ export default function StartMenu(): React.FC {
                 </div>
 
                 <div className={styles.actionButton}>
-                    <Button block shape="round" onClick={() => router.push('/gameoflife')}>
+                    <Button block shape="round" onClick={() => setIsModalVisible(true)}>
                         let&apos;s play
                     </Button>
                 </div>
             </div>
+            <Modal title="Settings" visible={isModalVisible} closable={false} footer={null}>
+                <GameSettingsForm
+                    applyText="Continue" //TODO: is there a way to move buttons outside
+                    onApply={(settings) => applySettings(settings)}
+                    cancelText="Cancel"
+                    onCancel={() => setIsModalVisible(false)}
+                />
+            </Modal>
         </LandingLayout>
     );
 }

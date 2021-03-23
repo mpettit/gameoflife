@@ -15,6 +15,8 @@ export default function GameEnvironment(): React.FC {
     useEffect(() => {
         const canvas = canvasRef.current;
         const canvasContext = canvas.getContext('2d');
+        canvasContext.fillStyle = gameSettings.cellSettings.deadColor;
+        canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);
 
         const gameEnvironment = new GameOfLifeEnvironment(canvasContext, gameSettings);
         gameEnvironment.draw();
