@@ -5,7 +5,7 @@ import Image from 'next/image';
 import LandingLayout from '../components/LandingLayout/LandingLayout';
 import styles from './index.module.scss';
 
-export default function StartMenu(): JSX.Element {
+export default function StartMenu(): React.FC {
     const router = useRouter();
 
     return (

@@ -5,7 +5,7 @@ import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import { useSelector } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
 
-export default function GameEnvironment(): JSX.Element {
+export default function GameEnvironment(): React.FC {
     const canvasRef = useRef();
     const gameSettings = useSelector(getSettings);
 
@@ -20,6 +20,7 @@ export default function GameEnvironment(): JSX.Element {
         gameEnvironment.draw();
 
         const intervalId = setInterval(() => {
+            //TODO: can we add pause + auto pause on tab unfocused
             gameEnvironment.evolve(true);
         }, gameSettings.evolutionInterval);
 

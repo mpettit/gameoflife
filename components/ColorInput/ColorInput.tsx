@@ -9,9 +9,10 @@ interface ColorInputProps {
 }
 
 //TODO: make this tab-able
-export default function ColorInput({ color, onChange }: ColorInputProps): JSX.Element {
+export default function ColorInput({ color, onChange }: ColorInputProps): React.FC {
 
     const colorTitle = color ? color.toLowerCase() : 'none selected';
+    
 
     return (
         <>

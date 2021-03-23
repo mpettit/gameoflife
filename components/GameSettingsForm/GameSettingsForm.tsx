@@ -15,8 +15,8 @@ interface GameSettingsFormProps {
     onCancel: () => void;
 }
 
-export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
-    const settings = useSelector(getSettings);
+export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): React.FC {
+    const settings = useSelector(getSettings);  //TODO: not working in sidebar
     const [formValues, setFormValues] = useState<GameOfLifeSettings>(settings);
 
     const formLayoutSpan = { label: 8, input: 16 };

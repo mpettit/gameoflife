@@ -4,7 +4,7 @@ import '../styles/globals.scss';
 import { Provider } from 'react-redux';
 import store from '../store/store';
 
-function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+function MyApp({ Component, pageProps }: AppProps): React.FC {
     return (
         <Provider store={store}>
             <Component {...pageProps} />

@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styles from './PageHeader.module.scss';
 
-export default function PageHeader(): JSX.Element {
-    return <AntPageHeader title={<PageHeaderLogo />} className={styles.pageHeader} backIcon="false"></AntPageHeader>;
+export default function PageHeader({ headerRightIcon }: { headerRightIcon: React.ReactNode }): React.FC {
+    return <AntPageHeader title={<PageHeaderLogo />} extra={<div>{headerRightIcon}</div>} className={styles.pageHeader} backIcon="false"></AntPageHeader>;
 }
 
-function PageHeaderLogo(): JSX.Element {
+function PageHeaderLogo(): React.FC {
     const router = useRouter();
     return (
         <div

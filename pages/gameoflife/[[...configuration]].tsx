@@ -2,24 +2,27 @@ import React, { useState, useEffect } from 'react';
 import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
 import { GameOfLifeCellSettings, GameOfLifeSettings } from '../../models/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
-import { Button, Drawer, Modal } from 'antd';
+import { Drawer, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
 import { setGameOfLifeSettings, setIsLoaded } from '../../store/settings/settingsActions';
 import GameSettingsForm from '../../components/GameSettingsForm/GameSettingsForm';
 import { useRouter } from 'next/router';
-import OkCancel from '../../components/OkCancel/OkCancel';
+import { SettingOutlined } from '@ant-design/icons';
+import styles from './gameoflife.module.scss';
 
 //TODO: remove these
 const CELL_DIMENSION = 2;
 const CANVAS_DIMENSION = 100;
 const EVOLUTION_INTERVAL = 50;
 
+//TODO: add ability to skip generations
+
 interface GameOfLifeProps {
     initialGameSettings?: GameOfLifeSettings;
 }
 
-export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): JSX.Element {
+export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): React.FC {
     const router = useRouter();
     const dispatch = useDispatch();
     const gameSettings = useSelector(getSettings);
@@ -28,7 +31,7 @@ export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): JS
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
     useEffect(() => {
-        dispatch(setGameOfLifeSettings(initialGameSettings));   //TODO: this needs major cleanup
+        dispatch(setGameOfLifeSettings(initialGameSettings)); //TODO: this needs major cleanup
         setIsModalVisible(true);
     }, []);
 
@@ -44,10 +47,10 @@ export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): JS
     }
 
     return (
-        <PageLayout>
+        <PageLayout headerRightIcon={<SettingOutlined className={styles.headerIcon} onClick={() => setIsDrawerVisible((prev) => !prev)} />}>
             <Modal title="Settings" visible={isModalVisible} closable={false} footer={null}>
                 <GameSettingsForm
-                    applyText="Continue"
+                    applyText="Continue" //TODO: is there a way to move buttons outside
                     onApply={(settings) => applySettings(settings)}
                     cancelText="Cancel"
                     onCancel={() => navigateToLanding()}
@@ -69,11 +72,7 @@ export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): JS
                     onCancel={() => setIsDrawerVisible(false)}
                 />
             </Drawer>
-
             {gameSettings.isLoaded && <GameEnvironment />}
-            <Button type="primary" shape="round" onClick={() => setIsDrawerVisible(true)}>
-                open drawer
-            </Button>
         </PageLayout>
     );
 }
