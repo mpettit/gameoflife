@@ -4,25 +4,30 @@ import { GameOfLifeSettings } from './game-of-life-settings';
 export class GameOfLifeEnvironment {
     private _cells: GameofLifeCell[];
     private readonly _context: CanvasRenderingContext2D;
-    private readonly _dimensions: [number, number];
-    private readonly _canvasDimensions: [number, number];
+    private readonly _height: number;
+    private readonly _width: number;
+    private readonly _canvasHeight: number;
+    private readonly _canvasWidth: number;
     private readonly _generation: number;
 
     constructor(context: CanvasRenderingContext2D, environmentSettings: GameOfLifeSettings) {
-        const [height, width] = environmentSettings.environmentDimensions;
+        const height = environmentSettings.environmentHeight;
+        const width = environmentSettings.environmentWidth;
         const cellSize = environmentSettings.cellSettings.cellSize;
         this._context = context;
-        this._dimensions = environmentSettings.environmentDimensions;
-        this._canvasDimensions = [height * cellSize, width * cellSize];
+        this._height = height;
+        this._width = width;
+        this._canvasHeight = height * cellSize;
+        this._canvasWidth = width * cellSize;
         this._generation = 0;
         this._cells = [];
 
         for (let rowIndex = 0; rowIndex < height; rowIndex++) {
             for (let colIndex = 0; colIndex < width; colIndex++) {
-                this._cells.push(new GameofLifeCell([rowIndex, colIndex], [height, width], environmentSettings.cellSettings));
+                this._cells.push(new GameofLifeCell(rowIndex, colIndex, height, width, environmentSettings.cellSettings));
             }
         }
-        this.applyAliveCoordinates(environmentSettings.initialAliveCongiguration, height, width);
+        this.applyAliveCoordinates(environmentSettings.initialAliveConfiguration);
     }
 
     getGeneration(): number {
@@ -59,10 +64,9 @@ export class GameOfLifeEnvironment {
     draw(): void {
         // prerender differences from last generation then apply
         requestAnimationFrame(() => {
-            const [canvasHeight, canvasWidth] = this._canvasDimensions;
             const preRenderCanvas = document.createElement('canvas');
-            preRenderCanvas.height = canvasHeight;
-            preRenderCanvas.width = canvasWidth;
+            preRenderCanvas.height = this._canvasHeight;
+            preRenderCanvas.width = this._canvasWidth;
             const preRenderContext = preRenderCanvas.getContext('2d');
             this._cells.forEach((cell) => cell.draw(preRenderContext));
             this._context.drawImage(preRenderCanvas, 0, 0);
@@ -70,18 +74,17 @@ export class GameOfLifeEnvironment {
     }
 
     private getCell(row: number, column: number): GameofLifeCell | undefined {
-        const [height, width] = this._dimensions;
-        if (row < height && column < width) {
-            return this._cells[row * width + column];
+        if (row < this._height && column < this._width) {
+            return this._cells[row * this._width + column];
         }
         return undefined;
     }
 
-    private applyAliveCoordinates(initialAliveCoordinates: EnvironmentCoordinate[], height: number, width: number): void {
+    private applyAliveCoordinates(initialAliveCoordinates: EnvironmentCoordinate[]): void {
         const validAliveCoords = initialAliveCoordinates.filter((aliveCoord) => {
             // filter out coords that aren't valid in environment
             const [row, column] = aliveCoord;
-            return row >= 0 && row < height && column >= 0 && column < width;
+            return row >= 0 && row < this._height && column >= 0 && column < this._width;
         });
 
         validAliveCoords.forEach((aliveCoord: EnvironmentCoordinate) => {

@@ -8,12 +8,15 @@ export class GameofLifeCell {
     private _isVisited: boolean;
     private _requiresRedraw: boolean;
     private _cellSettings: GameOfLifeCellSettings;
-    private readonly _coordinates: EnvironmentCoordinate;
+    private readonly _row: number;
+    private readonly _column: number;
     private readonly _neighbors: EnvironmentCoordinate[];
 
     constructor(
-        coordinates: EnvironmentCoordinate,
-        environmentDimensions: EnvironmentCoordinate,
+        cellRow: number,
+        cellColumn: number,
+        environmentHeight: number,
+        environmentWidth: number,
         cellSettings: GameOfLifeCellSettings
     ) {
         this._isAlive = false;
@@ -21,25 +24,23 @@ export class GameofLifeCell {
         this._isVisited = false;
         this._requiresRedraw = false;
         this._cellSettings = cellSettings;
-        this._coordinates = coordinates;
+        this._row = cellRow;
+        this._column = cellColumn;
 
-        const [row, column] = coordinates;
-        const [rowSize, columnSize] = environmentDimensions;
-
-        const rowGreaterThanZero = row > 0;
-        const rowLessThanMax = row < rowSize - 1;
-        const columnGreaterThanZero = column > 0;
-        const columnLessThanMax = column < columnSize - 1;
+        const rowGreaterThanZero = cellRow > 0;
+        const rowLessThanMax = cellRow < environmentHeight - 1;
+        const columnGreaterThanZero = cellColumn > 0;
+        const columnLessThanMax = cellColumn < environmentWidth - 1;
 
         this._neighbors = [
-            rowGreaterThanZero && columnGreaterThanZero ? [row - 1, column - 1] : undefined,
-            rowGreaterThanZero ? [row - 1, column] : undefined,
-            rowGreaterThanZero && columnLessThanMax ? [row - 1, column + 1] : undefined,
-            columnLessThanMax ? [row, column + 1] : undefined,
-            rowLessThanMax && columnLessThanMax ? [row + 1, column + 1] : undefined,
-            rowLessThanMax ? [row + 1, column] : undefined,
-            rowLessThanMax && columnGreaterThanZero ? [row + 1, column - 1] : undefined,
-            columnGreaterThanZero ? [row, column - 1] : undefined,
+            rowGreaterThanZero && columnGreaterThanZero ? [this._row - 1, this._column - 1] : undefined,
+            rowGreaterThanZero ? [this._row - 1, this._column] : undefined,
+            rowGreaterThanZero && columnLessThanMax ? [this._row - 1, this._column + 1] : undefined,
+            columnLessThanMax ? [this._row, this._column + 1] : undefined,
+            rowLessThanMax && columnLessThanMax ? [this._row + 1, this._column + 1] : undefined,
+            rowLessThanMax ? [this._row + 1, this._column] : undefined,
+            rowLessThanMax && columnGreaterThanZero ? [this._row + 1, this._column - 1] : undefined,
+            columnGreaterThanZero ? [this._row, this._column - 1] : undefined,
         ].filter((coordinate) => coordinate !== undefined);
     }
 
@@ -66,11 +67,10 @@ export class GameofLifeCell {
     }
 
     draw(context: CanvasRenderingContext2D): void {
-        const [row, column] = this._coordinates;
         if (this._requiresRedraw) {             // only draw differences
             const cellSize = this._cellSettings.cellSize;
             context.fillStyle = this.getCellColor();
-            context.fillRect(row * cellSize, column * cellSize, cellSize, cellSize);
+            context.fillRect(this._row * cellSize, this._column * cellSize, cellSize, cellSize);
         }
     }
 

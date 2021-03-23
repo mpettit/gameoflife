@@ -7,7 +7,7 @@ import PageLayout from '../components/PageLayout/PageLayout';
 export default function FourOhFour(): JSX.Element {
     const router = useRouter();
 
-    function returnToLanding() {
+    function navigateToLanding() {
         router.push('/');
     }
 
@@ -18,7 +18,7 @@ export default function FourOhFour(): JSX.Element {
                 title="404"
                 subTitle="Oh no! Looks like we're lost."
                 extra={
-                    <Button type="primary" shape="round" onClick={returnToLanding}>
+                    <Button type="primary" shape="round" onClick={navigateToLanding}>
                         Return to safety!
                     </Button>
                 }

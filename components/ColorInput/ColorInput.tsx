@@ -1,27 +1,22 @@
-import React, { useState } from 'react';
-import { Input, Popover } from 'antd';
+import React from 'react';
+import { Popover } from 'antd';
 import { HexColorPicker } from 'react-colorful';
 import styles from './ColorInput.module.scss';
 
 interface ColorInputProps {
-    initialColor?: string;
-    onColorChange: () => void;
+    color?: string;
+    onChange: (color) => void;
 }
 
-export default function ColorInput({ initialColor, onColorChange }: ColorInputProps): JSX.Element {
-    const [color, setColor] = useState(initialColor);
-
-    function onColorInputChange(color: string) {
-        setColor(color);
-        onColorChange(color);
-    }
+//TODO: make this tab-able
+export default function ColorInput({ color, onChange }: ColorInputProps): JSX.Element {
 
     const colorTitle = color ? color.toLowerCase() : 'none selected';
 
     return (
         <>
             <Popover
-                content={<ColorInputMenu color={color} onChange={(color) => onColorInputChange(color)} />}
+                content={<ColorInputMenu color={color} onChange={(newColor) => onChange(newColor)} />}
                 placement="bottomLeft"
                 trigger={["click","focus"]}
             >

@@ -1,5 +1,6 @@
-.colorInputContainer{
+@import '../../styles/variables.scss';
 
+.colorInputContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -9,10 +10,10 @@
         margin: 5px;
         width: 14px;
         height: 14px;
-        border:1px solid black;
+        border: 1px solid $outline;
         border-radius: 2px;
     }
-   
+
     .colorInputTitle {
         font-size: 14px;
         margin-left: 3px;

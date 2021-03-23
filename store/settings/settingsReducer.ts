@@ -8,6 +8,7 @@ export interface GameOfLifeSettingsState extends GameOfLifeSettings {
 
 const initialState: GameOfLifeSettingsState = {
     cellSettings: {},
+    initialAliveConfiguration: [],
     isLoaded: false,
 };
 
@@ -17,7 +18,6 @@ export default function settingsReducer(state = initialState, action: AnyAction)
             return {
                 ...state,
                 ...action.payload,
-                isLoaded: true,
             };
         case GameOfLifeSettingsAction.ChangeSetting:
             return {
