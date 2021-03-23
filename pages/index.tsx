@@ -14,9 +14,8 @@ export default function StartMenu(): React.FC {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    function applySettings(newSettings: GameOfLifeSettings) {
+    function applySettingsAndContinue(newSettings: GameOfLifeSettings) {
         dispatch(setGameOfLifeSettings(newSettings));
-        // dispatch(setIsLoaded(true));
         router.push('/gameoflife');
     }
 
@@ -53,7 +52,7 @@ export default function StartMenu(): React.FC {
             <Modal title="Settings" visible={isModalVisible} closable={false} footer={null}>
                 <GameSettingsForm
                     applyText="Continue" //TODO: is there a way to move buttons outside
-                    onApply={(settings) => applySettings(settings)}
+                    onApply={(settings) => applySettingsAndContinue(settings)}
                     cancelText="Cancel"
                     onCancel={() => setIsModalVisible(false)}
                 />

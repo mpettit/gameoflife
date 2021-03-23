@@ -106,8 +106,6 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     </Col>
                 </Row>
             )}
-
-            {/* {footerChildren} */}
             <OkCancel applyText={applyText} onApply={() => onApply(formValues)} cancelText={cancelText} onCancel={onCancel} />
         </>
     );

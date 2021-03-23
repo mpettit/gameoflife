@@ -22,12 +22,13 @@ export class GameOfLifeEnvironment {
         this._generation = 0;
         this._cells = [];
 
+        console.log("new evironment " + this._canvasHeight + " " + this._canvasWidth);
         for (let rowIndex = 0; rowIndex < height; rowIndex++) {
             for (let colIndex = 0; colIndex < width; colIndex++) {
                 this._cells.push(new GameofLifeCell(rowIndex, colIndex, height, width, environmentSettings.cellSettings));
             }
         }
-        this.applyAliveCoordinates(environmentSettings.initialAliveConfiguration);
+        this.applyAliveCoordinates(environmentSettings.initialAliveCoordinates);
     }
 
     getGeneration(): number {
@@ -35,6 +36,7 @@ export class GameOfLifeEnvironment {
     }
 
     evolve(redraw?: boolean): void {
+        console.log("evolving " + this._canvasHeight + " " + this._canvasWidth);
         this._cells = this._cells.map((cell) => {
             const aliveNeighbors = cell
                 .getNeighborCoordinates()

@@ -15,8 +15,8 @@ export default function FourOhFour(): React.FC {
         <PageLayout>
             <Result
                 icon={<FrownTwoTone />}
-                title="404"
-                subTitle="Oh no! Looks like we're lost."
+                title="Oh no! Looks like you might be lost."
+                subTitle="No signs of life here."
                 extra={
                     <Button type="primary" shape="round" onClick={navigateToLanding}>
                         Return to safety!

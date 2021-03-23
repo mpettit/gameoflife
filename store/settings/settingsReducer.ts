@@ -1,10 +1,8 @@
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import { AnyAction } from 'redux';
-import { GameOfLifeSettingsAction } from './settingsActions';
+import { GameOfLifeSettingsActionType } from './settingsActions';
 
-export interface GameOfLifeSettingsState extends GameOfLifeSettings {
-    isLoaded: boolean;
-}
+export type GameOfLifeSettingsState = GameOfLifeSettings;
 
 const initialState: GameOfLifeSettingsState = {
     cellSettings: {
@@ -16,36 +14,25 @@ const initialState: GameOfLifeSettingsState = {
     },
     environmentHeight: 100,
     environmentWidth: 100,
-    evolutionInterval: 100,
-    initialAliveConfiguration: [],
-    isLoaded: false,
+    evolutionInterval: 5000,
+    initialAliveCoordinates: [],
 };
 
 export default function settingsReducer(state = initialState, action: AnyAction): GameOfLifeSettingsState {
-    console.log(action);
     switch (action.type) {
-        case GameOfLifeSettingsAction.SetSettings:
+        case GameOfLifeSettingsActionType.SetSettings:
             return {
                 ...state,
                 ...action.payload,
             };
-        case GameOfLifeSettingsAction.ChangeSetting:
+        case GameOfLifeSettingsActionType.ChangeSetting:
             return {
                 ...state,
                 ...action.payload,
-            };
-        case GameOfLifeSettingsAction.ChangeCellSetting:
-            return {
-                ...state,
                 cellSettings: {
                     ...state.cellSettings,
-                    ...action.payload,
+                    ...action.payload.cellSettings,
                 },
-            };
-        case GameOfLifeSettingsAction.SetIsLoaded:
-            return {
-                ...state,
-                isLoaded: action.payload,
             };
         default:
             return state;

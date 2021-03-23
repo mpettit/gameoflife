@@ -4,81 +4,68 @@ import { GameOfLifeCellSettings, GameOfLifeSettings } from '../../models/game-of
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { Drawer } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSettings } from '../../store/settings/settingsSelectors';
-import { setGameOfLifeSettings, setIsLoaded } from '../../store/settings/settingsActions';
+import { changeSetting, setGameOfLifeSettings } from '../../store/settings/settingsActions';
 import GameSettingsForm from '../../components/GameSettingsForm/GameSettingsForm';
 import { SettingOutlined } from '@ant-design/icons';
 import styles from './gameoflife.module.scss';
+import { startGame, stopGame } from '../../store/controls/controlsAction';
+import GameControlMenu from '../../components/GameControlMenu/GameControlMenu';
+import { getSettings } from '../../store/settings/settingsSelectors';
 
-//TODO: remove these
-const CANVAS_DIMENSION = 100;
-
-//TODO: add ability to skip generations
-
-interface GameOfLifeProps {
-    initialGameSettings?: GameOfLifeSettings;
-}
-
-export default function GameOfLife({ initialGameSettings }: GameOfLifeProps): React.FC {
+export default function GameOfLife(): React.FC {
     const dispatch = useDispatch();
     const gameSettings = useSelector(getSettings);
 
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
     useEffect(() => {
-        dispatch(setGameOfLifeSettings(initialGameSettings)); 
-        dispatch(setIsLoaded(true)); //TODO: this needs major cleanup
+        //TODO: replace with alive from configuration
+        const initialAliveCoordinates = [];
+        for (let i = 0; i < gameSettings.environmentHeight; i++) {
+            for (let j = 0; j < gameSettings.environmentWidth; j++) {
+                if (Math.random() < 0.15) {
+                    initialAliveCoordinates.push([i, j]);
+                }
+            }
+        }
+        dispatch(changeSetting({ initialAliveCoordinates }));
     }, []);
 
-    function applySettings(newSettings: GameOfLifeSettings) {
+    function openDrawer(): void {
+        dispatch(stopGame());
+        setIsDrawerVisible((prev) => !prev);
+    }
+
+    function closeDrawerAndApplySettings(newSettings: GameOfLifeSettings) {
         dispatch(setGameOfLifeSettings(newSettings));
-        dispatch(setIsLoaded(true));
+        setIsDrawerVisible(false);
+    }
+
+    function closeDrawer() {
+        dispatch(startGame());
         setIsDrawerVisible(false);
     }
 
     return (
-        <PageLayout headerRightIcon={<SettingOutlined className={styles.headerIcon} onClick={() => setIsDrawerVisible((prev) => !prev)} />}>
-          
+        <PageLayout headerRightIcon={<SettingOutlined className={styles.headerIcon} onClick={() => openDrawer()} />}>
             <Drawer
                 title="Settings"
                 placement="right"
                 width="35%"
                 closable={true}
-                onClose={() => setIsDrawerVisible(false)}
+                onClose={() => closeDrawer()}
                 visible={isDrawerVisible}
                 getContainer={false}
             >
                 <GameSettingsForm
                     applyText="Apply"
-                    onApply={(settings) => applySettings(settings)}
+                    onApply={(settings) => closeDrawerAndApplySettings(settings)}
                     cancelText="Cancel"
-                    onCancel={() => setIsDrawerVisible(false)}
+                    onCancel={() => closeDrawer()}
                 />
             </Drawer>
-            {gameSettings.isLoaded && <GameEnvironment />}
+            <GameEnvironment />
+            <GameControlMenu />
         </PageLayout>
     );
 }
-
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-    // TODO: get board for configuration instead of faking here
-    const initialAlive = [];
-    for (let i = 0; i < CANVAS_DIMENSION; i++) {
-        for (let j = 0; j < CANVAS_DIMENSION; j++) {
-            if (Math.random() < 0.15) {
-                // if (i==j){
-                initialAlive.push([i, j]);
-            }
-        }
-    }
-
-    const initialGameSettings: Partial<GameOfLifeSettings> = {
-        initialAliveConfiguration: initialAlive,
-    };
-
-    return {
-        props: {
-            initialGameSettings,
-        },
-    };
-};
