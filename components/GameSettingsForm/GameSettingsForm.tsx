@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ColorInput from '../ColorInput/ColorInput';
 import { getSettings } from '../../store/settings/settingsSelectors';
@@ -15,8 +15,16 @@ interface GameSettingsFormProps {
 }
 
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): React.FC {
-    const settings = useSelector(getSettings);  //TODO: not working in sidebar
-    const [formValues, setFormValues] = useState<GameOfLifeSettings>(settings);
+    const settings = useSelector(getSettings);
+    const [formValues, setFormValues] = useState(settings);
+
+    useEffect(()=>{
+        // update form values whenever state settings change
+        setFormValues(prev => ({
+            ...prev,
+            ...settings,
+        }))
+    }, [settings])
 
     const formLayoutSpan = { label: 8, input: 16 };
 

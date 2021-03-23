@@ -4,7 +4,7 @@ import { GameOfLifeCellSettings, GameOfLifeSettings } from '../../models/game-of
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { Drawer } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeSetting, setGameOfLifeSettings } from '../../store/settings/settingsActions';
+import { changeSetting } from '../../store/settings/settingsActions';
 import GameSettingsForm from '../../components/GameSettingsForm/GameSettingsForm';
 import { SettingOutlined } from '@ant-design/icons';
 import styles from './gameoflife.module.scss';
@@ -37,7 +37,7 @@ export default function GameOfLife(): React.FC {
     }
 
     function closeDrawerAndApplySettings(newSettings: GameOfLifeSettings) {
-        dispatch(setGameOfLifeSettings(newSettings));
+        dispatch(changeSetting(newSettings));
         setIsDrawerVisible(false);
     }
 

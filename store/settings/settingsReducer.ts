@@ -14,17 +14,14 @@ const initialState: GameOfLifeSettingsState = {
     },
     environmentHeight: 100,
     environmentWidth: 100,
-    evolutionInterval: 5000,
+    evolutionInterval: 1000,
     initialAliveCoordinates: [],
 };
 
 export default function settingsReducer(state = initialState, action: AnyAction): GameOfLifeSettingsState {
+    console.log("New settings action");
+    console.log(action);
     switch (action.type) {
-        case GameOfLifeSettingsActionType.SetSettings:
-            return {
-                ...state,
-                ...action.payload,
-            };
         case GameOfLifeSettingsActionType.ChangeSetting:
             return {
                 ...state,

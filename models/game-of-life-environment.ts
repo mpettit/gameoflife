@@ -22,7 +22,6 @@ export class GameOfLifeEnvironment {
         this._generation = 0;
         this._cells = [];
 
-        console.log("new evironment " + this._canvasHeight + " " + this._canvasWidth);
         for (let rowIndex = 0; rowIndex < height; rowIndex++) {
             for (let colIndex = 0; colIndex < width; colIndex++) {
                 this._cells.push(new GameofLifeCell(rowIndex, colIndex, height, width, environmentSettings.cellSettings));
@@ -36,26 +35,26 @@ export class GameOfLifeEnvironment {
     }
 
     evolve(redraw?: boolean): void {
-        console.log("evolving " + this._canvasHeight + " " + this._canvasWidth);
-        this._cells = this._cells.map((cell) => {
-            const aliveNeighbors = cell
-                .getNeighborCoordinates()
-                .filter(([neighborRow, neighborColumn]) => this.getCell(neighborRow, neighborColumn)?.isAlive() || false).length;
-           
-            if ((cell.isAlive() && aliveNeighbors === 2) || aliveNeighbors === 3) {
-                // alive cells with 2 or 3 alive neighbors survive
-                // other alive cells die from either underpopulation or overpopulation
-                // dead cells with 3 neighbors become alive through reproduction
-                cell.setNextIsAlive(true);
-            } else {
-                cell.setNextIsAlive(false);
-            }
-            return cell;
-        })
-        .map(cell => {
-            cell.evolve();
-            return cell;
-        });
+        this._cells = this._cells
+            .map((cell) => {
+                const aliveNeighbors = cell
+                    .getNeighborCoordinates()
+                    .filter(([neighborRow, neighborColumn]) => this.getCell(neighborRow, neighborColumn)?.isAlive() || false).length;
+
+                if ((cell.isAlive() && aliveNeighbors === 2) || aliveNeighbors === 3) {
+                    // alive cells with 2 or 3 alive neighbors survive
+                    // other alive cells die from either underpopulation or overpopulation
+                    // dead cells with 3 neighbors become alive through reproduction
+                    cell.setNextIsAlive(true);
+                } else {
+                    cell.setNextIsAlive(false);
+                }
+                return cell;
+            })
+            .map((cell) => {
+                cell.evolve();
+                return cell;
+            });
         this._generation++;
 
         if (redraw) {
