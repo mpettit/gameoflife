@@ -7,7 +7,6 @@ import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import OkCancel, { OkCancelProps } from '../OkCancel/OkCancel';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface GameSettingsFormProps {
     applyText: string;
     onApply: (settings: GameOfLifeSettings) => void;
