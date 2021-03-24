@@ -6,6 +6,7 @@ import { Row, Col, Switch, InputNumber } from 'antd';
 import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import OkCancel from '../OkCancel/OkCancel';
+import * as yup from 'yup';
 
 interface GameSettingsFormProps {
     applyText: string;
@@ -13,24 +14,56 @@ interface GameSettingsFormProps {
     cancelText: string;
     onCancel: () => void;
 }
+const hexColorRegex = '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$';
+const formSchema = yup
+    .object()
+    .shape({
+        environmentHeight: yup.number().label('Environment height').min(0).max(500).required(),
+        environmentWidth: yup.number().label('Environment width').min(0).max(500).required(),
+        evolutionInterval: yup.number().label('Environment interval').min(30).required(),
+        cellSettings: yup
+            .object()
+            .shape({
+                aliveColor: yup.string().label('Alive color').matches(hexColorRegex).required(),
+                visitedColor: yup.string().label('Visited color').matches(hexColorRegex).required(),
+                deadColor: yup.string().label('Dead color').matches(hexColorRegex).required(),
+                showVisited: yup.boolean().label('Show visited toggle'),
+                cellSize: yup.number().label('Cell size').min(0).max(50).required(),
+            })
+            .noUnknown(false),
+    })
+    .noUnknown(false);
 
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
+    const [error, setError] = useState<string | undefined>(false);
     const [formValues, setFormValues] = useState(settings);
 
-    useEffect(()=>{
+    useEffect(() => {
         // update form values whenever state settings change
-        setFormValues(prev => ({
+        setFormValues((prev) => ({
             ...prev,
             ...settings,
-        }))
-    }, [settings])
+        }));
+    }, [settings]);
 
     const formLayoutSpan = { label: 8, input: 16 };
+
+    function validateAndApply() {
+        formSchema
+            .validate(formValues)
+            .then((value) => {
+                onApply(formValues); // => { name: 'jimmy',age: 24 }
+            })
+            .catch((err) => {
+                setError(err.errors.join('. '));
+            });
+    }
 
     //TODO: add validation
     return (
         <>
+            {error && <div className={styles.errorMessage}>{error}</div>}
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
                     Environment Dimensions:
@@ -46,7 +79,8 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                         placeholder="width"
                         value={formValues.environmentWidth}
                         onChange={(environmentWidth) => setFormValues((prev) => ({ ...prev, environmentWidth }))}
-                    />
+                    />{' '}
+                    px
                 </Col>
             </Row>
             <Row className={styles.formElement}>
@@ -58,7 +92,8 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                         placeholder="interval"
                         value={formValues.evolutionInterval}
                         onChange={(evolutionInterval) => setFormValues((prev) => ({ ...prev, evolutionInterval }))}
-                    />
+                    />{' '}
+                    ms
                 </Col>
             </Row>
             <Row className={styles.formElement}>
@@ -70,7 +105,8 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                         placeholder="dimension"
                         value={formValues.cellSettings?.cellSize}
                         onChange={(cellSize) => setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, cellSize } }))}
-                    />
+                    />{' '}
+                    ms
                 </Col>
             </Row>
             <Row className={styles.formElement}>
@@ -114,7 +150,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     </Col>
                 </Row>
             )}
-            <OkCancel applyText={applyText} onApply={() => onApply(formValues)} cancelText={cancelText} onCancel={onCancel} />
+            <OkCancel applyText={applyText} onApply={() => validateAndApply()} cancelText={cancelText} onCancel={onCancel} />
         </>
     );
 }
