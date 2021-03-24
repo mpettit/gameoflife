@@ -3,7 +3,7 @@ import styles from './GameEnvironment.module.scss';
 import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import { resetGame, startGame, startGameSuccess, stopGame, stopGameSuccess } from '../../store/controls/controlsAction';
+import { resetGame, startGameSuccess, stopGame, stopGameSuccess } from '../../store/controls/controlsAction';
 import { getGameStatus } from '../../store/controls/controlsSelectors';
 import { GameStatus } from '../../store/controls/controlsReducer';
 
@@ -30,7 +30,6 @@ export default function GameEnvironment(): JSX.Element {
     }, [gameStatus]);
 
     useEffect(() => {
-        //TODO: canvas blank when changing cell size or dimensions
         if (gameStatus != GameStatus.Resetting) {
             dispatch(resetGame());
         }
@@ -86,7 +85,7 @@ export default function GameEnvironment(): JSX.Element {
         const newEnvironment = new GameOfLifeEnvironment(gameSettings, getCanvasContext());
         newEnvironment.draw();
         setGameEnvironment(newEnvironment);
-        dispatch(startGame());
+        dispatch(stopGame());
     }
 
     function getCanvasContext(): CanvasRenderingContext2D | undefined {
@@ -108,7 +107,6 @@ export default function GameEnvironment(): JSX.Element {
     return (
         <div className={styles.boardContainer}>
             <canvas ref={canvasRef} id="gameoflife" height={canvasHeight} width={canvasWidth} />
-            {gameStatus}
         </div>
     );
 }

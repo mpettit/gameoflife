@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
-import { Drawer } from 'antd';
+import { Drawer, Row, Col } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeSetting } from '../../store/settings/settingsActions';
 import GameSettingsForm from '../../components/GameSettingsForm/GameSettingsForm';
@@ -13,6 +13,7 @@ import GameControlMenu from '../../components/GameControlMenu/GameControlMenu';
 import { getSettings } from '../../store/settings/settingsSelectors';
 
 export default function GameOfLife(): JSX.Element {
+    const layoutSpan = { environment: 16, menu: 8 };
     const dispatch = useDispatch();
     const gameSettings = useSelector(getSettings);
 
@@ -20,15 +21,17 @@ export default function GameOfLife(): JSX.Element {
 
     useEffect(() => {
         //TODO: replace with alive from configuration
-        const initialAliveCoordinates = [];
-        for (let i = 0; i < gameSettings.environmentHeight; i++) {
-            for (let j = 0; j < gameSettings.environmentWidth; j++) {
-                if (Math.random() < 0.15) {
-                    initialAliveCoordinates.push([i, j]);
+        if (gameSettings.initialAliveCoordinates.length === 0) {
+            const initialAliveCoordinates = [];
+            for (let i = 0; i < gameSettings.environmentHeight; i++) {
+                for (let j = 0; j < gameSettings.environmentWidth; j++) {
+                    if (Math.random() < 0.15) {
+                        initialAliveCoordinates.push([i, j]);
+                    }
                 }
             }
+            dispatch(changeSetting({ initialAliveCoordinates }));
         }
-        dispatch(changeSetting({ initialAliveCoordinates }));
     }, []);
 
     function openDrawer(): void {
@@ -64,8 +67,15 @@ export default function GameOfLife(): JSX.Element {
                     onCancel={() => closeDrawer()}
                 />
             </Drawer>
-            <GameEnvironment />
-            <GameControlMenu />
+
+            <Row>
+                <Col span={layoutSpan.environment} className={styles.environmentContainer}>
+                    <GameEnvironment />
+                </Col>
+                <Col span={layoutSpan.menu} className={styles.menuContainer}>
+                    <GameControlMenu />
+                </Col>
+            </Row>
         </PageLayout>
     );
 }

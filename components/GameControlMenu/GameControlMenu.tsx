@@ -6,18 +6,18 @@ import { getGameStatus } from '../../store/controls/controlsSelectors';
 import { Button } from 'antd';
 
 const startButtonStatuses = [GameStatus.Stopped];
-const stopButtonStatuses = [GameStatus.Starting,GameStatus.Running];
-
+const stopButtonStatuses = [GameStatus.Starting, GameStatus.Running];
 
 export default function GameControlMenu(): JSX.Element {
     const dispatch = useDispatch();
-    const gameStaus = useSelector(getGameStatus);
+    const gameStatus = useSelector(getGameStatus);
 
-    const showStartButton = startButtonStatuses.includes(gameStaus);
-    const showStopButton = stopButtonStatuses.includes(gameStaus);
+    const showStartButton = startButtonStatuses.includes(gameStatus);
+    const showStopButton = stopButtonStatuses.includes(gameStatus);
 
     return (
         <div>
+            <div> {gameStatus}</div>
             {showStartButton && (
                 <Button type="primary" shape="round" onClick={() => dispatch(startGame())}>
                     Start

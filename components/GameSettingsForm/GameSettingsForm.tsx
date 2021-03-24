@@ -7,6 +7,9 @@ import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import OkCancel from '../OkCancel/OkCancel';
 import * as yup from 'yup';
+import { Button, Upload, Spin } from 'antd';
+import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { convertImageToCoordinateArray } from '../../lib/images/image-processor';
 
 interface GameSettingsFormProps {
     applyText: string;
@@ -18,8 +21,8 @@ const hexColorRegex = '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$';
 const formSchema = yup
     .object()
     .shape({
-        environmentHeight: yup.number().label('Environment height').min(0).max(500).required(),
-        environmentWidth: yup.number().label('Environment width').min(0).max(500).required(),
+        environmentHeight: yup.number().label('Environment height').min(0).max(5000).required(),
+        environmentWidth: yup.number().label('Environment width').min(0).max(5000).required(),
         evolutionInterval: yup.number().label('Environment interval').min(30).required(),
         cellSettings: yup
             .object()
@@ -37,6 +40,8 @@ const formSchema = yup
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
     const [error, setError] = useState<string | undefined>(false);
+    const [files, setFiles] = useState<File[]>([]);
+    const [isImageProcessing, setIsImageProcessing] = useState(false);
     const [formValues, setFormValues] = useState(settings);
 
     useEffect(() => {
@@ -49,18 +54,23 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
 
     const formLayoutSpan = { label: 8, input: 16 };
 
-    function validateAndApply() {
+    function validateAndApply(): void {
+        if (isImageProcessing) {
+            setError('Image is still processing');
+            return;
+        }
+
         formSchema
             .validate(formValues)
-            .then((value) => {
-                onApply(formValues); // => { name: 'jimmy',age: 24 }
+            .then(() => {
+                //success
+                onApply(formValues);
             })
             .catch((err) => {
                 setError(err.errors.join('. '));
             });
     }
 
-    //TODO: add validation
     return (
         <>
             {error && <div className={styles.errorMessage}>{error}</div>}
@@ -106,7 +116,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                         value={formValues.cellSettings?.cellSize}
                         onChange={(cellSize) => setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, cellSize } }))}
                     />{' '}
-                    ms
+                    px
                 </Col>
             </Row>
             <Row className={styles.formElement}>
@@ -150,7 +160,47 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     </Col>
                 </Row>
             )}
-            <OkCancel applyText={applyText} onApply={() => validateAndApply()} cancelText={cancelText} onCancel={onCancel} />
+            <Row className={styles.formElement}>
+                <Col span={formLayoutSpan.label} className={styles.formLabel}>
+                    Image:
+                </Col>
+                <Col span={formLayoutSpan.input} className={styles.formInput}>
+                    {/* TODO: get rid of inline style */}
+                    <Spin spinning={isImageProcessing} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
+                        <Upload
+                            accept={['image/png', 'image/jpeg']}
+                            onRemove={() => {
+                                setFiles([]);
+                                setFormValues((prev) => ({ ...formValues, initialAliveCoordinates: settings.initialAliveCoordinates }));
+                            }}
+                            beforeUpload={(file) => {
+                                setFiles([file]);
+                                setIsImageProcessing(true);
+                                convertImageToCoordinateArray(file, formValues.environmentHeight, formValues.environmentWidth)
+                                    .then((coordinateData) => {
+                                        const initialAliveCoordinates = coordinateData.aliveCoords;
+                                        setFormValues((prev) => ({ ...prev, initialAliveCoordinates }));
+                                    })
+                                    .catch((e) => {
+                                        console.log(e);
+                                        setError((prev) => prev + ' ' + e);
+                                    })
+                                    .finally(() => {
+                                        setIsImageProcessing(false);
+                                    });
+                            }}
+                        >
+                            <Button disabled={files.length > 0} icon={<UploadOutlined />}>
+                                Select File
+                            </Button>
+                        </Upload>
+                    </Spin>
+                </Col>
+            </Row>
+
+            <div className={styles.buttonContainer}>
+                <OkCancel applyText={applyText} onApply={() => validateAndApply()} cancelText={cancelText} onCancel={onCancel} />
+            </div>
         </>
     );
 }
