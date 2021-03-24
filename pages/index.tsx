@@ -7,8 +7,9 @@ import Image from 'next/image';
 import LandingLayout from '../components/LandingLayout/LandingLayout';
 import GameSettingsForm from '../components/GameSettingsForm/GameSettingsForm';
 import styles from './index.module.scss';
+import { GameOfLifeSettings } from '../models/game-of-life-settings';
 
-export default function StartMenu(): React.FC {
+export default function StartMenu(): JSX.Element {
     const router = useRouter();
     const dispatch = useDispatch();
 

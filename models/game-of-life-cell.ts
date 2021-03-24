@@ -41,7 +41,7 @@ export class GameofLifeCell {
             rowLessThanMax ? [this._row + 1, this._column] : undefined,
             rowLessThanMax && columnGreaterThanZero ? [this._row + 1, this._column - 1] : undefined,
             columnGreaterThanZero ? [this._row, this._column - 1] : undefined,
-        ].filter((coordinate) => coordinate !== undefined);
+        ].filter((coordinate) => coordinate !== undefined) as EnvironmentCoordinate[];
     }
 
     isAlive(): boolean {
@@ -66,8 +66,8 @@ export class GameofLifeCell {
         return this._neighbors;
     }
 
-    draw(context: CanvasRenderingContext2D): void {
-        if (this._requiresRedraw) {             // only draw differences
+    draw(context: CanvasRenderingContext2D | null): void {
+        if (context && this._requiresRedraw) {             // only draw differences
             const cellSize = this._cellSettings.cellSize;
             context.fillStyle = this.getCellColor();
             context.fillRect(this._column * cellSize, this._row * cellSize, cellSize, cellSize);

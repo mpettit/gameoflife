@@ -9,7 +9,7 @@ export interface OkCancelProps {
     onCancel: () => void;
 }
 
-export default function OkCancel({ applyText, onApply, cancelText, onCancel }: OkCancelProps): React.FC {
+export default function OkCancel({ applyText, onApply, cancelText, onCancel }: OkCancelProps): JSX.Element {
     return (
         <div className={styles.buttonContainer}>
             <Button className={styles.button} shape="round" onClick={() => onCancel()}>

@@ -5,7 +5,7 @@ import { getSettings } from '../../store/settings/settingsSelectors';
 import { Row, Col, Switch, InputNumber } from 'antd';
 import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
-import OkCancel, { OkCancelProps } from '../OkCancel/OkCancel';
+import OkCancel from '../OkCancel/OkCancel';
 
 interface GameSettingsFormProps {
     applyText: string;
@@ -14,7 +14,7 @@ interface GameSettingsFormProps {
     onCancel: () => void;
 }
 
-export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): React.FC {
+export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
     const [formValues, setFormValues] = useState(settings);
 

@@ -1,5 +1,4 @@
 import { AnyAction } from 'redux';
-import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 
 export enum GameOfLifeSettingsActionType {
     ChangeSetting = 'Change Setting',

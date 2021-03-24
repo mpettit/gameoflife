@@ -1,16 +1,17 @@
 import { GameofLifeCell } from './game-of-life-cell';
 import { GameOfLifeSettings } from './game-of-life-settings';
+import { EnvironmentCoordinate } from '../models/game-of-life-cell';
 
 export class GameOfLifeEnvironment {
     private _cells: GameofLifeCell[];
-    private readonly _context: CanvasRenderingContext2D;
+    private _generation: number;
+    private readonly _context: CanvasRenderingContext2D | undefined;
     private readonly _height: number;
     private readonly _width: number;
     private readonly _canvasHeight: number;
     private readonly _canvasWidth: number;
-    private readonly _generation: number;
 
-    constructor(context: CanvasRenderingContext2D, environmentSettings: GameOfLifeSettings) {
+    constructor(environmentSettings: GameOfLifeSettings, context?: CanvasRenderingContext2D) {
         const height = environmentSettings.environmentHeight;
         const width = environmentSettings.environmentWidth;
         const cellSize = environmentSettings.cellSettings.cellSize;
@@ -70,7 +71,9 @@ export class GameOfLifeEnvironment {
             preRenderCanvas.width = this._canvasWidth;
             const preRenderContext = preRenderCanvas.getContext('2d');
             this._cells.forEach((cell) => cell.draw(preRenderContext));
-            this._context.drawImage(preRenderCanvas, 0, 0);
+            if (this._context !== undefined) {
+                this._context.drawImage(preRenderCanvas, 0, 0);
+            }
         });
     }
 

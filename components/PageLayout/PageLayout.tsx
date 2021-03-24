@@ -4,11 +4,11 @@ import PageHeader from '../PageHeader/PageHeader';
 import { Affix } from 'antd';
 
 interface PageLayoutProps {
-    children: React.ReactNode;
-    headerRightIcon: React.ReactNode;
+    children: JSX.Element | JSX.Element[];
+    headerRightIcon?: JSX.Element;
 }
 
-export default function PageLayout({ children, headerRightIcon }: PageLayoutProps): React.FC {
+export default function PageLayout({ children, headerRightIcon }: PageLayoutProps): JSX.Element {
     return (
         <>
             <Head />

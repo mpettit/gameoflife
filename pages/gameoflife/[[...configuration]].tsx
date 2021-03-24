@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
-import { GameOfLifeCellSettings, GameOfLifeSettings } from '../../models/game-of-life-settings';
+import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { Drawer } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import { startGame, stopGame } from '../../store/controls/controlsAction';
 import GameControlMenu from '../../components/GameControlMenu/GameControlMenu';
 import { getSettings } from '../../store/settings/settingsSelectors';
 
-export default function GameOfLife(): React.FC {
+export default function GameOfLife(): JSX.Element {
     const dispatch = useDispatch();
     const gameSettings = useSelector(getSettings);
 

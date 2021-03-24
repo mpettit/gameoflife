@@ -9,7 +9,7 @@ const startButtonStatuses = [GameStatus.Stopped];
 const stopButtonStatuses = [GameStatus.Starting,GameStatus.Running];
 
 
-export default function GameControlMenu(): React.FC {
+export default function GameControlMenu(): JSX.Element {
     const dispatch = useDispatch();
     const gameStaus = useSelector(getGameStatus);
 

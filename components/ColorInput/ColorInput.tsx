@@ -5,14 +5,13 @@ import styles from './ColorInput.module.scss';
 
 interface ColorInputProps {
     color?: string;
-    onChange: (color) => void;
+    onChange: (color: string) => void;
 }
 
 //TODO: make this tab-able
-export default function ColorInput({ color, onChange }: ColorInputProps): React.FC {
+export default function ColorInput({ color, onChange }: ColorInputProps): JSX.Element {
 
     const colorTitle = color ? color.toLowerCase() : 'none selected';
-    
 
     return (
         <>

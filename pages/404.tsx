@@ -4,7 +4,7 @@ import { Result, Button } from 'antd';
 import { FrownTwoTone } from '@ant-design/icons';
 import PageLayout from '../components/PageLayout/PageLayout';
 
-export default function FourOhFour(): React.FC {
+export default function FourOhFour(): JSX.Element {
     const router = useRouter();
 
     function navigateToLanding() {

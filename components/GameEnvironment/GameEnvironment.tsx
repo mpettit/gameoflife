@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './GameEnvironment.module.scss';
 import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
-import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
 import { resetGame, startGame, startGameSuccess, stopGame, stopGameSuccess } from '../../store/controls/controlsAction';
 import { getGameStatus } from '../../store/controls/controlsSelectors';
 import { GameStatus } from '../../store/controls/controlsReducer';
 
-export default function GameEnvironment(): React.FC {
-    const canvasRef = useRef();
+export default function GameEnvironment(): JSX.Element {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const canvasRef = useRef<HTMLCanvasElement>() as any;
     const dispatch = useDispatch();
-    const gameStatus = useSelector<GameStatus>(getGameStatus);
-    const gameSettings = useSelector<GameOfLifeSettings>(getSettings);
-    const [gameEnvironment, setGameEnvironment] = useState(undefined);
+    const gameStatus = useSelector(getGameStatus);
+    const gameSettings = useSelector(getSettings);
+    const [gameEnvironment, setGameEnvironment] = useState<GameOfLifeEnvironment | undefined>(undefined);
     // const [runningIntervalId, setRunningIntervalId] = useState(undefined);
     const canvasHeight = gameSettings.environmentHeight * gameSettings.cellSettings.cellSize;
     const canvasWidth = gameSettings.environmentWidth * gameSettings.cellSettings.cellSize;
@@ -38,22 +38,27 @@ export default function GameEnvironment(): React.FC {
 
     function handleGameStatusChange(): number | undefined {
         console.log('new game status: ' + gameStatus);
+        let timeoutId = undefined;
         switch (gameStatus) {
             case GameStatus.Resetting:
-                return handleGameResetting();
+                handleGameResetting();
+                break
             case GameStatus.Starting:
-                return handleGameStarting();
+                handleGameStarting();
+                break;
             case GameStatus.Running:
-                return handleGameRunning();
+                timeoutId = handleGameRunning();
+                break;
             case GameStatus.Stopping:
-                return handleGameStopping();
+                handleGameStopping();
+                break;
             case GameStatus.Stopped:
                 //do nothing
-                return;
+                break;
             default:
                 dispatch(stopGame());
         }
-        return;
+        return timeoutId;
     }
 
     function handleGameStarting(): void {
@@ -61,12 +66,13 @@ export default function GameEnvironment(): React.FC {
         dispatch(startGameSuccess());
     }
 
-    function handleGameRunning(): void {
+    function handleGameRunning(): number {
         console.log('running');
-        return setInterval(() => {
-            gameEnvironment.evolve(true);
+        return window.setInterval(() => {
+            if (gameEnvironment !== undefined) {
+                gameEnvironment?.evolve(true);
+            }
         }, gameSettings.evolutionInterval);
-        // setRunningIntervalId(newIntervalId);
     }
 
     function handleGameStopping(): void {
@@ -77,21 +83,26 @@ export default function GameEnvironment(): React.FC {
     function handleGameResetting(): void {
         console.log('resetting');
         prepareCanvas();
-        const newEnvironment = new GameOfLifeEnvironment(getCanvasContext(), gameSettings);
+        const newEnvironment = new GameOfLifeEnvironment(gameSettings, getCanvasContext());
         newEnvironment.draw();
         setGameEnvironment(newEnvironment);
         dispatch(startGame());
     }
 
-    function getCanvasContext(): CanvasRenderingContext2D {
+    function getCanvasContext(): CanvasRenderingContext2D | undefined {
         const canvas = canvasRef.current;
-        return canvas.getContext('2d');
+        if (canvas !== undefined) {
+            return canvas.getContext('2d') as CanvasRenderingContext2D;
+        }
+        return undefined;
     }
 
     function prepareCanvas(): void {
         const canvasContext = getCanvasContext();
-        canvasContext.fillStyle = gameSettings.cellSettings.deadColor;
-        canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);
+        if (canvasContext !== undefined) {
+            canvasContext.fillStyle = gameSettings.cellSettings.deadColor;
+            canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
     }
 
     return (

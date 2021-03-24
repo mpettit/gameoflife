@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import styles from './PageHeader.module.scss';
 
 
-export default function PageHeader({ headerRightIcon }: { headerRightIcon: React.ReactNode }): React.FC {
+export default function PageHeader({ headerRightIcon }: { headerRightIcon?: JSX.Element }): JSX.Element {
     return (
         <AntPageHeader
             title={<PageHeaderLogo />}
@@ -16,7 +16,7 @@ export default function PageHeader({ headerRightIcon }: { headerRightIcon: React
     );
 }
 
-function PageHeaderLogo(): React.FC {
+function PageHeaderLogo(): JSX.Element {
     const router = useRouter();
 
     function navigateToLanding() {
