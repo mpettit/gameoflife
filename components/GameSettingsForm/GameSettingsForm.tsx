@@ -132,8 +132,8 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <Checkbox
                         checked={formValues.cellSettings?.wrapBorders}
-                        onChange={(wrapBorders) =>
-                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, wrapBorders } }))
+                        onChange={(e) =>
+                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, wrapBorders: e.target.checked } }))
                         }
                     />
                 </Col>
@@ -184,8 +184,8 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <Checkbox
                         checked={formValues.cellSettings?.showVisited}
-                        onChange={(showVisited) =>
-                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, showVisited } }))
+                        onChange={(e) =>
+                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, showVisited: e.target.checked } }))
                         }
                     />
                 </Col>
