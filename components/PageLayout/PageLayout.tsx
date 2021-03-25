@@ -2,6 +2,7 @@ import React from 'react';
 import Head from '../Head/Head';
 import PageHeader from '../PageHeader/PageHeader';
 import { Affix } from 'antd';
+import styles from './PageLayout.module.scss';
 
 interface PageLayoutProps {
     children: JSX.Element | JSX.Element[];
@@ -15,7 +16,7 @@ export default function PageLayout({ children, headerRightIcon }: PageLayoutProp
             <Affix>
                 <PageHeader headerRightIcon={headerRightIcon} />
             </Affix>
-            <div>{children}</div>
+            <div className={styles.childrenContainer}>{children}</div>
         </>
     );
 }

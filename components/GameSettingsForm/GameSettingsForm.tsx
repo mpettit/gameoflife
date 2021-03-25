@@ -39,8 +39,8 @@ const formSchema = yup
 
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
+    const formLayoutSpan = { label: 8, input: 16 };
     const [error, setError] = useState<string | undefined>(false);
-    const [files, setFiles] = useState<File[]>([]);
     const [isImageProcessing, setIsImageProcessing] = useState(false);
     const [formValues, setFormValues] = useState(settings);
 
@@ -52,7 +52,29 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
         }));
     }, [settings]);
 
-    const formLayoutSpan = { label: 8, input: 16 };
+    function calculateImageToCoordinateArray(file: File, height: number, width: number) {
+        setIsImageProcessing(true);
+        convertImageToCoordinateArray(file, height, width)
+            .then((coordinateData) => {
+                const { initialAliveCoordinates, initialVisitedCoordinates } = coordinateData;
+                setFormValues((prev) => ({ ...prev, initialAliveCoordinates, initialVisitedCoordinates }));
+            })
+            .catch((e) => {
+                setError((prev) => prev + ' ' + e);
+            })
+            .finally(() => {
+                setIsImageProcessing(false);
+            });
+    }
+
+    function onFileUpload(file: File, height: number, width: number): void {
+        setFormValues((prev) => ({ ...prev, uploadFile: file }));
+        calculateImageToCoordinateArray(file, height, width)
+    }
+
+    function onFileRemove(): void {
+        setFormValues((prev) => ({ ...prev, initialAliveCoordinates: settings.initialAliveCoordinates, uploadFile: undefined }));
+    }
 
     function validateAndApply(): void {
         if (isImageProcessing) {
@@ -82,13 +104,23 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     <InputNumber
                         placeholder="height"
                         value={formValues.environmentHeight}
-                        onChange={(environmentHeight) => setFormValues((prev) => ({ ...prev, environmentHeight }))}
+                        onChange={(environmentHeight) => {
+                            if (environmentHeight > 0 && formValues.uploadFile !== undefined) {
+                                calculateImageToCoordinateArray(formValues.uploadFile, environmentHeight, formValues.environmentWidth);
+                            }
+                            setFormValues((prev) => ({ ...prev, environmentHeight }));
+                        }}
                     />
                     {' x '}
                     <InputNumber
                         placeholder="width"
                         value={formValues.environmentWidth}
-                        onChange={(environmentWidth) => setFormValues((prev) => ({ ...prev, environmentWidth }))}
+                        onChange={(environmentWidth) => {
+                            if (environmentWidth > 0 && formValues.uploadFile !== undefined) {
+                                calculateImageToCoordinateArray(formValues.uploadFile, formValues.environmentHeight, environmentWidth);
+                            }
+                            setFormValues((prev) => ({ ...prev, environmentWidth }));
+                        }}
                     />{' '}
                     px
                 </Col>
@@ -165,31 +197,14 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     Image:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
-                    {/* TODO: get rid of inline style */}
-                    <Spin spinning={isImageProcessing} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
+                    <Spin spinning={isImageProcessing} indicator={<LoadingOutlined spin />}>
                         <Upload
                             accept={['image/png', 'image/jpeg']}
-                            onRemove={() => {
-                                setFiles([]);
-                                setFormValues((prev) => ({ ...formValues, initialAliveCoordinates: settings.initialAliveCoordinates }));
-                            }}
-                            beforeUpload={(file) => {
-                                setFiles([file]);
-                                setIsImageProcessing(true);
-                                convertImageToCoordinateArray(file, formValues.environmentHeight, formValues.environmentWidth)
-                                    .then((coordinateData) => {
-                                        const { initialAliveCoordinates, initialVisitedCoordinates } = coordinateData;
-                                        setFormValues((prev) => ({ ...prev, initialAliveCoordinates, initialVisitedCoordinates }));
-                                    })
-                                    .catch((e) => {
-                                        setError((prev) => prev + ' ' + e);
-                                    })
-                                    .finally(() => {
-                                        setIsImageProcessing(false);
-                                    });
-                            }}
+                            onRemove={() => onFileRemove()}
+                            defaultFileList={settings.uploadFile !== undefined ? [settings.uploadFile] : []}
+                            beforeUpload={(file) => onFileUpload(file,formValues.environmentHeight, formValues.environmentWidth)}
                         >
-                            <Button disabled={files.length > 0} icon={<UploadOutlined />}>
+                            <Button disabled={formValues.uploadFile !== undefined} icon={<UploadOutlined />}>
                                 Select File
                             </Button>
                         </Upload>

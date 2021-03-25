@@ -2,7 +2,9 @@ import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import { AnyAction } from 'redux';
 import { GameOfLifeSettingsActionType } from './settingsActions';
 
-export type GameOfLifeSettingsState = GameOfLifeSettings;
+export interface GameOfLifeSettingsState extends GameOfLifeSettings {
+    uploadFile: File,
+};
 
 const initialState: GameOfLifeSettingsState = {
     cellSettings: {

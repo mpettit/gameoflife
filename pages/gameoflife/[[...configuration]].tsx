@@ -2,21 +2,20 @@ import React, { useState, useEffect } from 'react';
 import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
-import { Drawer, Row, Col } from 'antd';
+import { Drawer } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeSetting } from '../../store/settings/settingsActions';
 import GameSettingsForm from '../../components/GameSettingsForm/GameSettingsForm';
 import { SettingOutlined } from '@ant-design/icons';
-import styles from './gameoflife.module.scss';
-import { startGame, stopGame } from '../../store/controls/controlsAction';
+import { stopGame } from '../../store/controls/controlsAction';
 import GameControlMenu from '../../components/GameControlMenu/GameControlMenu';
 import { getSettings } from '../../store/settings/settingsSelectors';
+import styles from './gameoflife.module.scss';
 
 export default function GameOfLife(): JSX.Element {
     const layoutSpan = { environment: 16, menu: 8 };
     const dispatch = useDispatch();
     const gameSettings = useSelector(getSettings);
-
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
     useEffect(() => {
@@ -45,7 +44,7 @@ export default function GameOfLife(): JSX.Element {
     }
 
     function closeDrawer() {
-        dispatch(startGame());
+        dispatch(stopGame());
         setIsDrawerVisible(false);
     }
 
@@ -67,15 +66,14 @@ export default function GameOfLife(): JSX.Element {
                     onCancel={() => closeDrawer()}
                 />
             </Drawer>
-
-            <Row>
-                <Col span={layoutSpan.environment} className={styles.environmentContainer}>
+            <div className={styles.pageLayout}>
+                <div span={layoutSpan.environment} className={styles.pageElementContainer}>
                     <GameEnvironment />
-                </Col>
-                <Col span={layoutSpan.menu} className={styles.menuContainer}>
+                </div>
+                <div span={layoutSpan.menu} className={styles.pageElementContainer}>
                     <GameControlMenu />
-                </Col>
-            </Row>
+                </div>
+            </div>
         </PageLayout>
     );
 }

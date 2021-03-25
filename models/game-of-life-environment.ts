@@ -12,9 +12,6 @@ export class GameOfLifeEnvironment {
     private readonly _canvasWidth: number;
 
     constructor(environmentSettings: GameOfLifeSettings, context?: CanvasRenderingContext2D) {
-        console.log('environment settings');
-        console.log(environmentSettings);
-
         const height = environmentSettings.environmentHeight;
         const width = environmentSettings.environmentWidth;
         const cellSize = environmentSettings.cellSettings.cellSize;
@@ -39,9 +36,6 @@ export class GameOfLifeEnvironment {
     }
 
     evolve(redraw?: boolean): void {
-        const visitedCells = this._cells.filter((cell) => cell.isVisited());
-        console.log('Number of visited cells at generation ' + this._generation + ': ' + visitedCells.length);
-
         this._cells = this._cells
             .map((cell) => {
                 const aliveNeighbors = cell

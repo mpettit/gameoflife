@@ -3,9 +3,11 @@ import styles from './GameEnvironment.module.scss';
 import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import { resetGame, startGameSuccess, stopGame, stopGameSuccess } from '../../store/controls/controlsAction';
+import { resetGame, startGame, startGameSuccess, stopGame, stopGameSuccess } from '../../store/controls/controlsAction';
 import { getGameStatus } from '../../store/controls/controlsSelectors';
 import { GameStatus } from '../../store/controls/controlsReducer';
+import { Spin } from 'antd';
+import { PlayCircleTwoTone, PauseCircleTwoTone } from '@ant-design/icons';
 
 export default function GameEnvironment(): JSX.Element {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,8 +15,8 @@ export default function GameEnvironment(): JSX.Element {
     const dispatch = useDispatch();
     const gameStatus = useSelector(getGameStatus);
     const gameSettings = useSelector(getSettings);
+    const [showCanvasOverlay, setShowCanvasOverlay] = useState(false);
     const [gameEnvironment, setGameEnvironment] = useState<GameOfLifeEnvironment | undefined>(undefined);
-    // const [runningIntervalId, setRunningIntervalId] = useState(undefined);
     const canvasHeight = gameSettings.environmentHeight * gameSettings.cellSettings.cellSize;
     const canvasWidth = gameSettings.environmentWidth * gameSettings.cellSettings.cellSize;
 
@@ -41,7 +43,7 @@ export default function GameEnvironment(): JSX.Element {
         switch (gameStatus) {
             case GameStatus.Resetting:
                 handleGameResetting();
-                break
+                break;
             case GameStatus.Starting:
                 handleGameStarting();
                 break;
@@ -105,8 +107,26 @@ export default function GameEnvironment(): JSX.Element {
     }
 
     return (
-        <div className={styles.boardContainer}>
-            <canvas ref={canvasRef} id="gameoflife" height={canvasHeight} width={canvasWidth} />
+        <div
+            className={styles.boardContainer}
+            onClick={() => {
+                if (gameStatus === GameStatus.Running) {
+                    dispatch(stopGame());
+                } else {
+                    dispatch(startGame());
+                }
+            }}
+            onMouseEnter={() => setShowCanvasOverlay(true)}
+            onMouseLeave={() => setShowCanvasOverlay(false)}
+        >
+            {/* <PlayCircleTwoTone /> <PauseCircleTwoTone /> */}
+            <Spin
+                spinning={showCanvasOverlay}
+                indicator={gameStatus !== GameStatus.Running ? <PlayCircleTwoTone /> : <PauseCircleTwoTone />}
+                size="large"
+            >
+                <canvas ref={canvasRef} id="gameoflife" height={canvasHeight} width={canvasWidth} />
+            </Spin>
         </div>
     );
 }
