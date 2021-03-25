@@ -14,8 +14,9 @@ const initialState: GameOfLifeSettingsState = {
     },
     environmentHeight: 100,
     environmentWidth: 100,
-    evolutionInterval: 1000,
+    evolutionInterval: 100,
     initialAliveCoordinates: [],
+    initialVisitedCoordinates: [],
 };
 
 export default function settingsReducer(state = initialState, action: AnyAction): GameOfLifeSettingsState {

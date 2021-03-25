@@ -12,6 +12,9 @@ export class GameOfLifeEnvironment {
     private readonly _canvasWidth: number;
 
     constructor(environmentSettings: GameOfLifeSettings, context?: CanvasRenderingContext2D) {
+        console.log('environment settings');
+        console.log(environmentSettings);
+
         const height = environmentSettings.environmentHeight;
         const width = environmentSettings.environmentWidth;
         const cellSize = environmentSettings.cellSettings.cellSize;
@@ -28,7 +31,7 @@ export class GameOfLifeEnvironment {
                 this._cells.push(new GameofLifeCell(rowIndex, colIndex, height, width, environmentSettings.cellSettings));
             }
         }
-        this.applyAliveCoordinates(environmentSettings.initialAliveCoordinates);
+        this.applyInitialCoordinates(environmentSettings.initialAliveCoordinates, environmentSettings.initialVisitedCoordinates);
     }
 
     getGeneration(): number {
@@ -36,6 +39,9 @@ export class GameOfLifeEnvironment {
     }
 
     evolve(redraw?: boolean): void {
+        const visitedCells = this._cells.filter((cell) => cell.isVisited());
+        console.log('Number of visited cells at generation ' + this._generation + ': ' + visitedCells.length);
+
         this._cells = this._cells
             .map((cell) => {
                 const aliveNeighbors = cell
@@ -84,11 +90,16 @@ export class GameOfLifeEnvironment {
         return undefined;
     }
 
-    private applyAliveCoordinates(initialAliveCoordinates: EnvironmentCoordinate[]): void {
+    private applyInitialCoordinates(
+        initialAliveCoordinates: EnvironmentCoordinate[],
+        initialVisitedCoordinates: EnvironmentCoordinate[]
+    ): void {
+        // filter out coords that aren't valid in environment
         const validAliveCoords = initialAliveCoordinates.filter((aliveCoord) => {
-            // filter out coords that aren't valid in environment
-            const [row, column] = aliveCoord;
-            return row >= 0 && row < this._height && column >= 0 && column < this._width;
+            return this.isValidCoordinate(aliveCoord);
+        });
+        const validVisitedCoords = initialVisitedCoordinates.filter((visitedCoord) => {
+            return this.isValidCoordinate(visitedCoord);
         });
 
         validAliveCoords.forEach((aliveCoord: EnvironmentCoordinate) => {
@@ -99,5 +110,18 @@ export class GameOfLifeEnvironment {
                 cell.evolve();
             }
         });
+
+        validVisitedCoords.forEach((visitedCoord: EnvironmentCoordinate) => {
+            const [row, column] = visitedCoord;
+            const cell = this.getCell(row, column);
+            if (cell) {
+                cell.setIsVisited(true);
+            }
+        });
+    }
+
+    private isValidCoordinate(coordinate: EnvironmentCoordinate): boolean {
+        const [row, column] = coordinate;
+        return row >= 0 && row < this._height && column >= 0 && column < this._width;
     }
 }

@@ -8,7 +8,7 @@ export function convertImageToCoordinateArray(
     imageFile: File,
     targetHeight: number,
     targetWidth: number
-): Promise<{ aliveCoords: EnvironmentCoordinate[]; visitedCoords: EnvironmentCoordinate[] }> {
+): Promise<{ initialAliveCoordinates: EnvironmentCoordinate[]; initialVisitedCoordinates: EnvironmentCoordinate[] }> {
 
     return getImageData(imageFile, targetHeight, targetWidth).then((imageData: ImageData) => {
         const aliveCoords = [];
@@ -36,7 +36,7 @@ export function convertImageToCoordinateArray(
             }
         }
 
-        return { aliveCoords, visitedCoords };
+        return { initialAliveCoordinates: aliveCoords, initialVisitedCoordinates: visitedCoords };
     });
 }
 

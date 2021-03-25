@@ -178,11 +178,10 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                                 setIsImageProcessing(true);
                                 convertImageToCoordinateArray(file, formValues.environmentHeight, formValues.environmentWidth)
                                     .then((coordinateData) => {
-                                        const initialAliveCoordinates = coordinateData.aliveCoords;
-                                        setFormValues((prev) => ({ ...prev, initialAliveCoordinates }));
+                                        const { initialAliveCoordinates, initialVisitedCoordinates } = coordinateData;
+                                        setFormValues((prev) => ({ ...prev, initialAliveCoordinates, initialVisitedCoordinates }));
                                     })
                                     .catch((e) => {
-                                        console.log(e);
                                         setError((prev) => prev + ' ' + e);
                                     })
                                     .finally(() => {

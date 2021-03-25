@@ -5,6 +5,7 @@ export interface GameOfLifeSettings {   //TODO: add setting for wrapped borders
     environmentWidth: number,
     evolutionInterval: number,
     initialAliveCoordinates: EnvironmentCoordinate[],
+    initialVisitedCoordinates: EnvironmentCoordinate[],
     cellSettings: GameOfLifeCellSettings,
 }
 

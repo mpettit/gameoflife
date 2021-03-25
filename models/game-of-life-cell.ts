@@ -22,7 +22,7 @@ export class GameofLifeCell {
         this._isAlive = false;
         this._nextIsAlive = false;
         this._isVisited = false;
-        this._requiresRedraw = false;
+        this._requiresRedraw = true;
         this._cellSettings = cellSettings;
         this._row = cellRow;
         this._column = cellColumn;
@@ -48,8 +48,13 @@ export class GameofLifeCell {
         return this._isAlive;
     }
 
-    setNextIsAlive(nextIsAlive: boolean): void {    //wont take effect until next evolution cycle triggered via .evolve()
+    setNextIsAlive(nextIsAlive: boolean): void {
+        //wont take effect until next evolution cycle triggered via .evolve()
         this._nextIsAlive = nextIsAlive;
+    }
+
+    setIsVisited(isVisited: boolean): void {
+        this._isVisited = isVisited;
     }
 
     evolve(): void {
@@ -67,7 +72,8 @@ export class GameofLifeCell {
     }
 
     draw(context: CanvasRenderingContext2D | null): void {
-        if (context && this._requiresRedraw) {             // only draw differences
+        // only draw differences
+        if (context && this._requiresRedraw) {
             const cellSize = this._cellSettings.cellSize;
             context.fillStyle = this.getCellColor();
             context.fillRect(this._column * cellSize, this._row * cellSize, cellSize, cellSize);
