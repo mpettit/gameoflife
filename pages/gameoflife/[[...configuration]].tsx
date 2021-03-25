@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
@@ -6,17 +6,16 @@ import { Drawer } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeSetting } from '../../store/settings/settingsActions';
 import GameSettingsForm from '../../components/GameSettingsForm/GameSettingsForm';
-import { SettingOutlined } from '@ant-design/icons';
-import { stopGame } from '../../store/controls/controlsAction';
-import GameControlMenu from '../../components/GameControlMenu/GameControlMenu';
+import { setShowSettingsDrawer } from '../../store/controls/controlsAction';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import styles from './gameoflife.module.scss';
+import { getShowSettingsDrawer } from '../../store/controls/controlsSelectors';
+import GameEnvironmentCard from '../../components/GameEnvironmentCard/GameEnvironmentCard';
+import styles from './[[...configuration]].module.scss';
 
 export default function GameOfLife(): JSX.Element {
-    const layoutSpan = { environment: 16, menu: 8 };
     const dispatch = useDispatch();
     const gameSettings = useSelector(getSettings);
-    const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+    const showSettingsDrawer = useSelector(getShowSettingsDrawer);
 
     useEffect(() => {
         //TODO: replace with alive from configuration
@@ -33,30 +32,24 @@ export default function GameOfLife(): JSX.Element {
         }
     }, []);
 
-    function openDrawer(): void {
-        dispatch(stopGame());
-        setIsDrawerVisible((prev) => !prev);
+    function closeDrawer() {
+        dispatch(setShowSettingsDrawer(false));
     }
 
     function closeDrawerAndApplySettings(newSettings: GameOfLifeSettings) {
         dispatch(changeSetting(newSettings));
-        setIsDrawerVisible(false);
-    }
-
-    function closeDrawer() {
-        dispatch(stopGame());
-        setIsDrawerVisible(false);
+        closeDrawer();
     }
 
     return (
-        <PageLayout headerRightIcon={<SettingOutlined className={styles.headerIcon} onClick={() => openDrawer()} />}>
+        <PageLayout>
             <Drawer
                 title="Settings"
                 placement="right"
                 width="35%"
                 closable={true}
                 onClose={() => closeDrawer()}
-                visible={isDrawerVisible}
+                visible={showSettingsDrawer}
                 getContainer={false}
             >
                 <GameSettingsForm
@@ -67,12 +60,7 @@ export default function GameOfLife(): JSX.Element {
                 />
             </Drawer>
             <div className={styles.pageLayout}>
-                <div span={layoutSpan.environment} className={styles.pageElementContainer}>
-                    <GameEnvironment />
-                </div>
-                <div span={layoutSpan.menu} className={styles.pageElementContainer}>
-                    <GameControlMenu />
-                </div>
+                <GameEnvironmentCard />
             </div>
         </PageLayout>
     );

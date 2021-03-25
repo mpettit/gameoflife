@@ -3,6 +3,7 @@ import { GameStatus } from './controlsReducer';
 
 export enum GameOfLifeControlActionType {
     SetGameStatus = 'Set Game Status',
+    SetShowSettingsDrawer = 'Set Show Settings Drawer',
 }
 
 export function setGameStatus(status: GameStatus): AnyAction {
@@ -29,3 +30,6 @@ export function resetGame(): AnyAction {
     return setGameStatus(GameStatus.Resetting);
 }
 
+export function setShowSettingsDrawer(showSettingsDrawer: boolean): AnyAction {
+    return { type: GameOfLifeControlActionType.SetShowSettingsDrawer, payload: showSettingsDrawer };
+}

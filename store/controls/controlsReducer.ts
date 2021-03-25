@@ -11,10 +11,12 @@ export enum GameStatus {
 
 export interface GameOfLifeControlState {
     status: GameStatus;
+    showSettingsDrawer: boolean;
 }
 
 const initialState: GameOfLifeControlState = {
     status: GameStatus.Stopped,
+    showSettingsDrawer: false,
 };
 
 export default function controlsReducer(state = initialState, action: AnyAction): GameOfLifeControlState {
@@ -23,6 +25,11 @@ export default function controlsReducer(state = initialState, action: AnyAction)
             return {
                 ...state,
                 status: action.payload,
+            };
+        case GameOfLifeControlActionType.SetShowSettingsDrawer:
+            return {
+                ...state,
+                showSettingsDrawer: action.payload,
             };
         default:
             return state;

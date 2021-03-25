@@ -6,15 +6,14 @@ import styles from './PageLayout.module.scss';
 
 interface PageLayoutProps {
     children: JSX.Element | JSX.Element[];
-    headerRightIcon?: JSX.Element;
 }
 
-export default function PageLayout({ children, headerRightIcon }: PageLayoutProps): JSX.Element {
+export default function PageLayout({ children }: PageLayoutProps): JSX.Element {
     return (
         <>
             <Head />
             <Affix>
-                <PageHeader headerRightIcon={headerRightIcon} />
+                <PageHeader />
             </Affix>
             <div className={styles.childrenContainer}>{children}</div>
         </>

@@ -121,8 +121,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                             }
                             setFormValues((prev) => ({ ...prev, environmentWidth }));
                         }}
-                    />{' '}
-                    px
+                    />
                 </Col>
             </Row>
             <Row className={styles.formElement}>
