@@ -9,10 +9,9 @@ export function convertImageToCoordinateArray(
     targetHeight: number,
     targetWidth: number
 ): Promise<{ initialAliveCoordinates: EnvironmentCoordinate[]; initialVisitedCoordinates: EnvironmentCoordinate[] }> {
-
     return getImageData(imageFile, targetHeight, targetWidth).then((imageData: ImageData) => {
-        const aliveCoords = [];
-        const visitedCoords = [];
+        const aliveCoords: EnvironmentCoordinate[] = [];
+        const visitedCoords: EnvironmentCoordinate[] = [];
         const greyScaleValues = Array.from(Array(targetHeight), () => Array(targetWidth).fill(0));
         for (let i = 0; i < imageData.data.length; i += 4) {
             const row = Math.floor(i / (imageData.width * 4));
@@ -40,14 +39,14 @@ export function convertImageToCoordinateArray(
     });
 }
 
-function getImage(file: File): Promise<Image> {
+function getImage(file: File): Promise<HTMLImageElement> {
     const reader = new FileReader();
     const image = new Image();
     return new Promise((resolve, reject) => {
         try {
             reader.onload = function () {
                 // file is loaded
-                image.src = reader.result;
+                image.src = reader.result as string;
                 image.onload = function () {
                     resolve(image);
                 };
@@ -60,7 +59,7 @@ function getImage(file: File): Promise<Image> {
 }
 
 function getImageData(file: File, targetHeight: number, targetWidth: number): Promise<ImageData> {
-    return getImage(file).then((image: Image) => {
+    return getImage(file).then((image: HTMLImageElement) => {
         // set up a canvas for image
         const tempCanvas = document.createElement('canvas');
         tempCanvas.height = targetHeight;
@@ -69,7 +68,6 @@ function getImageData(file: File, targetHeight: number, targetWidth: number): Pr
         //convert to image data array
         const tempContext = tempCanvas.getContext('2d');
         if (tempContext) {
-
             const widthScalar = targetWidth / image.width;
             const heightScalar = targetHeight / image.height;
 

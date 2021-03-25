@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 import { GameOfLifeSettingsActionType } from './settingsActions';
 
 export interface GameOfLifeSettingsState extends GameOfLifeSettings {
-    uploadFile: File,
+    uploadFile?: File,
 };
 
 const initialState: GameOfLifeSettingsState = {

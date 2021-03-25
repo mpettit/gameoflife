@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import GameEnvironment from '../../components/GameEnvironment/GameEnvironment';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { Drawer } from 'antd';

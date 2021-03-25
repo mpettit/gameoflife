@@ -10,14 +10,13 @@ import * as yup from 'yup';
 import { Button, Upload, Spin } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { convertImageToCoordinateArray } from '../../lib/images/image-processor';
-
 interface GameSettingsFormProps {
     applyText: string;
     onApply: (settings: GameOfLifeSettings) => void;
     cancelText: string;
     onCancel: () => void;
 }
-const hexColorRegex = '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$';
+const hexColorRegex = new RegExp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
 const formSchema = yup
     .object()
     .shape({
@@ -40,7 +39,7 @@ const formSchema = yup
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
     const formLayoutSpan = { label: 8, input: 16 };
-    const [error, setError] = useState<string | undefined>(false);
+    const [error, setError] = useState<string | undefined>(undefined);
     const [isImageProcessing, setIsImageProcessing] = useState(false);
     const [formValues, setFormValues] = useState(settings);
 
@@ -52,7 +51,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
         }));
     }, [settings]);
 
-    function calculateImageToCoordinateArray(file: File, height: number, width: number) {
+    function calculateImageToCoordinateArray(file: File, height: number, width: number): void {
         setIsImageProcessing(true);
         convertImageToCoordinateArray(file, height, width)
             .then((coordinateData) => {
@@ -67,9 +66,10 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
             });
     }
 
-    function onFileUpload(file: File, height: number, width: number): void {
+    function onFileUpload(file: File, height: number, width: number): boolean {
         setFormValues((prev) => ({ ...prev, uploadFile: file }));
-        calculateImageToCoordinateArray(file, height, width)
+        calculateImageToCoordinateArray(file, height, width);
+        return false;
     }
 
     function onFileRemove(): void {
@@ -198,10 +198,11 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <Spin spinning={isImageProcessing} indicator={<LoadingOutlined spin />}>
                         <Upload
-                            accept={['image/png', 'image/jpeg']}
+                            accept="image/png, image/jpeg"
                             onRemove={() => onFileRemove()}
-                            defaultFileList={settings.uploadFile !== undefined ? [settings.uploadFile] : []}
-                            beforeUpload={(file) => onFileUpload(file,formValues.environmentHeight, formValues.environmentWidth)}
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            defaultFileList={settings.uploadFile !== undefined ? ([settings.uploadFile] as any[]) : []}
+                            beforeUpload={(file) => onFileUpload(file, formValues.environmentHeight, formValues.environmentWidth)}
                         >
                             <Button disabled={formValues.uploadFile !== undefined} icon={<UploadOutlined />}>
                                 Select File
