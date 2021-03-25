@@ -38,7 +38,6 @@ export default function GameEnvironment(): JSX.Element {
     }, [gameSettings]);
 
     function handleGameStatusChange(): number | undefined {
-        console.log('new game status: ' + gameStatus);
         let timeoutId = undefined;
         switch (gameStatus) {
             case GameStatus.Resetting:
@@ -63,12 +62,10 @@ export default function GameEnvironment(): JSX.Element {
     }
 
     function handleGameStarting(): void {
-        console.log('starting');
         dispatch(startGameSuccess());
     }
 
     function handleGameRunning(): number {
-        console.log('running');
         return window.setInterval(() => {
             if (gameEnvironment !== undefined) {
                 gameEnvironment?.evolve(true);
@@ -77,12 +74,10 @@ export default function GameEnvironment(): JSX.Element {
     }
 
     function handleGameStopping(): void {
-        console.log('stopping');
         dispatch(stopGameSuccess());
     }
 
     function handleGameResetting(): void {
-        console.log('resetting');
         prepareCanvas();
         const newEnvironment = new GameOfLifeEnvironment(gameSettings, getCanvasContext());
         newEnvironment.draw();

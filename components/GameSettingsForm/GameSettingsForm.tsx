@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ColorInput from '../ColorInput/ColorInput';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import { Row, Col, Switch, InputNumber } from 'antd';
+import { Row, Col, Checkbox, InputNumber } from 'antd';
 import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import OkCancel from '../OkCancel/OkCancel';
@@ -16,12 +16,13 @@ interface GameSettingsFormProps {
     cancelText: string;
     onCancel: () => void;
 }
+
 const hexColorRegex = new RegExp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
 const formSchema = yup
     .object()
     .shape({
-        environmentHeight: yup.number().label('Environment height').min(0).max(5000).required(),
-        environmentWidth: yup.number().label('Environment width').min(0).max(5000).required(),
+        environmentHeight: yup.number().label('Environment height').min(0).max(1000).required(),
+        environmentWidth: yup.number().label('Environment width').min(0).max(1000).required(),
         evolutionInterval: yup.number().label('Environment interval').min(30).required(),
         cellSettings: yup
             .object()
@@ -126,6 +127,19 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
             </Row>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
+                    Wrap Borders:
+                </Col>
+                <Col span={formLayoutSpan.input} className={styles.formInput}>
+                    <Checkbox
+                        checked={formValues.cellSettings?.wrapBorders}
+                        onChange={(wrapBorders) =>
+                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, wrapBorders } }))
+                        }
+                    />
+                </Col>
+            </Row>
+            <Row className={styles.formElement}>
+                <Col span={formLayoutSpan.label} className={styles.formLabel}>
                     Environment Interval:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
@@ -168,7 +182,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     Show Visited Cells:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
-                    <Switch
+                    <Checkbox
                         checked={formValues.cellSettings?.showVisited}
                         onChange={(showVisited) =>
                             setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, showVisited } }))

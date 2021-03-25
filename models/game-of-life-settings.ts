@@ -1,6 +1,6 @@
 import { EnvironmentCoordinate } from "./game-of-life-cell";
 
-export interface GameOfLifeSettings {   //TODO: add setting for wrapped borders
+export interface GameOfLifeSettings {
     environmentHeight: number,
     environmentWidth: number,
     evolutionInterval: number,
@@ -15,4 +15,5 @@ export interface GameOfLifeCellSettings {
     deadColor: string,
     showVisited: boolean,
     cellSize: number,
+    wrapBorders: boolean,
 }

@@ -27,20 +27,26 @@ export class GameofLifeCell {
         this._row = cellRow;
         this._column = cellColumn;
 
-        const rowGreaterThanZero = cellRow > 0;
-        const rowLessThanMax = cellRow < environmentHeight - 1;
-        const columnGreaterThanZero = cellColumn > 0;
-        const columnLessThanMax = cellColumn < environmentWidth - 1;
+        const { wrapBorders } = cellSettings;
+        const rowMinusOne = wrapBorders ? (this._row + environmentHeight - 1) % environmentHeight : this._row - 1;
+        const rowPlusOne = wrapBorders ? (this._row + 1) % environmentHeight : this._row + 1;
+        const columnMinusOne = wrapBorders ? (this._column + environmentWidth - 1) % environmentWidth : this._column - 1;
+        const columnPlusOne = wrapBorders ? (this._column + 1) % environmentWidth : this._column + 1;
+
+        const rowGreaterThanZero = rowMinusOne >= 0;
+        const rowLessThanMax = rowPlusOne < environmentHeight;
+        const columnGreaterThanZero = columnMinusOne >= 0;
+        const columnLessThanMax = columnPlusOne < environmentWidth;
 
         this._neighbors = [
-            rowGreaterThanZero && columnGreaterThanZero ? [this._row - 1, this._column - 1] : undefined,
-            rowGreaterThanZero ? [this._row - 1, this._column] : undefined,
-            rowGreaterThanZero && columnLessThanMax ? [this._row - 1, this._column + 1] : undefined,
-            columnLessThanMax ? [this._row, this._column + 1] : undefined,
-            rowLessThanMax && columnLessThanMax ? [this._row + 1, this._column + 1] : undefined,
-            rowLessThanMax ? [this._row + 1, this._column] : undefined,
-            rowLessThanMax && columnGreaterThanZero ? [this._row + 1, this._column - 1] : undefined,
-            columnGreaterThanZero ? [this._row, this._column - 1] : undefined,
+            rowGreaterThanZero && columnGreaterThanZero ? [rowMinusOne, columnMinusOne] : undefined, // top left
+            rowGreaterThanZero ? [rowMinusOne, this._column] : undefined, // top
+            rowGreaterThanZero && columnLessThanMax ? [rowMinusOne, columnPlusOne] : undefined, // top right
+            columnLessThanMax ? [this._row, columnPlusOne] : undefined, // right
+            rowLessThanMax && columnLessThanMax ? [rowPlusOne, columnPlusOne] : undefined, // bottom right
+            rowLessThanMax ? [rowPlusOne, this._column] : undefined, // bottom
+            rowLessThanMax && columnGreaterThanZero ? [rowPlusOne, columnMinusOne] : undefined, // bottom left
+            columnGreaterThanZero ? [this._row, columnMinusOne] : undefined, // left
         ].filter((coordinate) => coordinate !== undefined) as EnvironmentCoordinate[];
     }
 

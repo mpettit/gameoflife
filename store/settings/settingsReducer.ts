@@ -13,6 +13,7 @@ const initialState: GameOfLifeSettingsState = {
         deadColor: '#FFFFFF',
         visitedColor: '#FAE6B1',
         showVisited: true,
+        wrapBorders: true,
     },
     environmentHeight: 100,
     environmentWidth: 100,
