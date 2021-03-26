@@ -114,7 +114,6 @@ export default function GameEnvironment(): JSX.Element {
             onMouseEnter={() => setShowCanvasOverlay(true)}
             onMouseLeave={() => setShowCanvasOverlay(false)}
         >
-            {/* <PlayCircleTwoTone /> <PauseCircleTwoTone /> */}
             <Spin
                 spinning={showCanvasOverlay}
                 indicator={gameStatus !== GameStatus.Running ? <PlayCircleTwoTone /> : <PauseCircleTwoTone />}

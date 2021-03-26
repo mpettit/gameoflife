@@ -45,7 +45,7 @@ export default function GameOfLife(): JSX.Element {
             <Drawer
                 title="Settings"
                 placement="right"
-                width="35%"
+                width="40%"
                 closable={true}
                 onClose={() => closeDrawer()}
                 visible={showSettingsDrawer}

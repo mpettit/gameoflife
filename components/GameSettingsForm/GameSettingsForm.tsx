@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ColorInput from '../ColorInput/ColorInput';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import { Row, Col, Checkbox, InputNumber } from 'antd';
+import { Row, Col, Button, Checkbox, InputNumber, Upload, Spin, Typography } from 'antd';
 import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import OkCancel from '../OkCancel/OkCancel';
 import * as yup from 'yup';
-import { Button, Upload, Spin } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { convertImageToCoordinateArray } from '../../lib/images/image-processor';
+
+const { Title } = Typography;
 interface GameSettingsFormProps {
     applyText: string;
     onApply: (settings: GameOfLifeSettings) => void;
@@ -37,9 +38,12 @@ const formSchema = yup
     })
     .noUnknown(false);
 
+const sectionLevel = 5;
+const fullRow = 24;
+const formLayoutSpan = { label: 5, input: 19, inputWithCheckbox: 12, checkbox: 7 };
+
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
-    const formLayoutSpan = { label: 8, input: 16 };
     const [error, setError] = useState<string | undefined>(undefined);
     const [isImageProcessing, setIsImageProcessing] = useState(false);
     const [formValues, setFormValues] = useState(settings);
@@ -102,9 +106,11 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
     return (
         <>
             {error && <div className={styles.errorMessage}>{error}</div>}
+
+            <Title level={sectionLevel}>Environment</Title>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Environment Dimensions:
+                    dimensions:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <InputNumber
@@ -117,7 +123,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                             setFormValues((prev) => ({ ...prev, environmentHeight }));
                         }}
                     />
-                    {' x '}
+                    <div>x</div>
                     <InputNumber
                         placeholder="width"
                         value={formValues.environmentWidth}
@@ -128,24 +134,23 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                             setFormValues((prev) => ({ ...prev, environmentWidth }));
                         }}
                     />
-                </Col>
-            </Row>
-            <Row className={styles.formElement}>
-                <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Wrap Borders:
-                </Col>
-                <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <Checkbox
+                        className={styles.marginLeft25}
                         checked={formValues.cellSettings?.wrapBorders}
                         onChange={(e) =>
-                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, wrapBorders: e.target.checked } }))
+                            setFormValues((prev) => ({
+                                ...prev,
+                                cellSettings: { ...prev.cellSettings, wrapBorders: e.target.checked },
+                            }))
                         }
-                    />
+                    >
+                        wrap borders
+                    </Checkbox>
                 </Col>
             </Row>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Environment Interval:
+                    interval:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <InputNumber
@@ -153,12 +158,12 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                         value={formValues.evolutionInterval}
                         onChange={(evolutionInterval) => setFormValues((prev) => ({ ...prev, evolutionInterval }))}
                     />{' '}
-                    ms
+                    <div>ms</div>
                 </Col>
             </Row>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Cell Size:
+                    cell Size:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <InputNumber
@@ -166,12 +171,13 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                         value={formValues.cellSettings?.cellSize}
                         onChange={(cellSize) => setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, cellSize } }))}
                     />{' '}
-                    px
+                    <div>px</div>
                 </Col>
             </Row>
+            <Title level={sectionLevel}>Colors</Title>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Alive Cell Color:
+                    alive cell:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <ColorInput
@@ -184,35 +190,33 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
             </Row>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Show Visited Cells:
+                    visited cell:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
-                    <Checkbox
-                        checked={formValues.cellSettings?.showVisited}
-                        onChange={(e) =>
-                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, showVisited: e.target.checked } }))
+                    <ColorInput
+                        color={formValues.cellSettings?.visitedColor}
+                        onChange={(visitedColor) =>
+                            setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, visitedColor } }))
                         }
                     />
+                    <Checkbox
+                        className={styles.marginLeft25}
+                        checked={formValues.cellSettings?.showVisited}
+                        onChange={(e) =>
+                            setFormValues((prev) => ({
+                                ...prev,
+                                cellSettings: { ...prev.cellSettings, showVisited: e.target.checked },
+                            }))
+                        }
+                    >
+                        show visited
+                    </Checkbox>
                 </Col>
             </Row>
-            {formValues.cellSettings?.showVisited && (
-                <Row className={styles.formElement}>
-                    <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                        Visited Cell Color:
-                    </Col>
-                    <Col span={formLayoutSpan.input} className={styles.formInput}>
-                        <ColorInput
-                            color={formValues.cellSettings?.visitedColor}
-                            onChange={(visitedColor) =>
-                                setFormValues((prev) => ({ ...prev, cellSettings: { ...prev.cellSettings, visitedColor } }))
-                            }
-                        />
-                    </Col>
-                </Row>
-            )}
+            <Title level={sectionLevel}>Starting State</Title>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
-                    Image:
+                    image:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
                     <Spin spinning={isImageProcessing} indicator={<LoadingOutlined spin />}>
