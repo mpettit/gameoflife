@@ -4,12 +4,23 @@ const RED_GREYSCALE_WEIGHT = 0.299;
 const GREEN_GREYSCALE_WEIGHT = 0.587;
 const BLUE_GREYSCALE_WEIGHT = 0.114;
 
+export interface ImageCoordinateArrayData {
+    initialAliveCoordinates: EnvironmentCoordinate[];
+    initialVisitedCoordinates: EnvironmentCoordinate[];
+    height: number;
+    width: number;
+}
+
 export function convertImageToCoordinateArray(
     imageFile: File,
     targetHeight: number,
-    targetWidth: number
-): Promise<{ initialAliveCoordinates: EnvironmentCoordinate[]; initialVisitedCoordinates: EnvironmentCoordinate[] }> {
-    return getImageData(imageFile, targetHeight, targetWidth).then((imageData: ImageData) => {
+    targetWidth: number,
+    matchImageAspectRatio = false
+): Promise<ImageCoordinateArrayData> {
+    return getImageData(imageFile, targetHeight, targetWidth, matchImageAspectRatio)
+    .then((loadedImageData: { imageData: ImageData; height: number; width: number }) => {
+
+        const { imageData, width, height } = loadedImageData;
         const aliveCoords: EnvironmentCoordinate[] = [];
         const visitedCoords: EnvironmentCoordinate[] = [];
         const greyScaleValues = Array.from(Array(targetHeight), () => Array(targetWidth).fill(0));
@@ -35,7 +46,41 @@ export function convertImageToCoordinateArray(
             }
         }
 
-        return { initialAliveCoordinates: aliveCoords, initialVisitedCoordinates: visitedCoords };
+        return { initialAliveCoordinates: aliveCoords, initialVisitedCoordinates: visitedCoords, height, width };
+    });
+}
+
+function getImageData(
+    file: File,
+    targetHeight: number,
+    targetWidth: number,
+    matchImageAspectRatio: boolean
+): Promise<{ imageData: ImageData; height: number; width: number }> {
+    return getImage(file).then((image: HTMLImageElement) => {
+
+        const originalHeight = image.height;
+        const originalWidth = image.width;
+        const adjustedTargetHeight = matchImageAspectRatio ? Math.round((originalHeight / originalWidth) * targetWidth) : targetHeight;
+
+        // set up a canvas for image
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.height = adjustedTargetHeight;
+        tempCanvas.width = targetWidth;
+
+        //convert to image data array
+        const tempContext = tempCanvas.getContext('2d');
+        if (tempContext) {
+            const widthScalar = targetWidth / originalWidth;
+            const heightScalar = adjustedTargetHeight / originalHeight;
+
+            tempContext.scale(widthScalar, heightScalar);
+            tempContext.drawImage(image, 0, 0);
+            const imageData = tempContext.getImageData(0, 0, targetWidth, adjustedTargetHeight);
+
+            return { imageData, height: adjustedTargetHeight, width: targetWidth };
+        }
+
+        throw Error('Can not convert image!');
     });
 }
 
@@ -47,7 +92,7 @@ function getImage(file: File): Promise<HTMLImageElement> {
             reader.onload = function () {
                 // file is loaded
                 image.src = reader.result as string;
-                image.onload = function () {
+                image.onload = function (event) {
                     resolve(image);
                 };
             };
@@ -55,29 +100,5 @@ function getImage(file: File): Promise<HTMLImageElement> {
         } catch (e) {
             reject(e);
         }
-    });
-}
-
-function getImageData(file: File, targetHeight: number, targetWidth: number): Promise<ImageData> {
-    return getImage(file).then((image: HTMLImageElement) => {
-        // set up a canvas for image
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.height = targetHeight;
-        tempCanvas.width = targetWidth;
-
-        //convert to image data array
-        const tempContext = tempCanvas.getContext('2d');
-        if (tempContext) {
-            const widthScalar = targetWidth / image.width;
-            const heightScalar = targetHeight / image.height;
-
-            tempContext.scale(widthScalar, heightScalar);
-            tempContext.drawImage(image, 0, 0);
-            tempContext.scale(widthScalar, heightScalar);
-
-            return tempContext.getImageData(0, 0, targetWidth, targetHeight);
-        }
-
-        throw Error('Can not convert image!');
     });
 }

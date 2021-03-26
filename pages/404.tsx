@@ -15,7 +15,7 @@ export default function FourOhFour(): JSX.Element {
         <PageLayout>
             <Result
                 icon={<FrownTwoTone />}
-                title="Oh no! Looks like you might be lost."
+                title="Oh no!"
                 subTitle="No signs of life here."
                 extra={
                     <Button type="primary" shape="round" onClick={navigateToLanding}>

@@ -52,12 +52,17 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
         }));
     }, [settings]);
 
-    function calculateImageToCoordinateArray(file: File, height: number, width: number): void {
+    function calculateImageToCoordinateArray(file: File, height: number, width: number, matchImageAspectRatio = false): void {
         setIsImageProcessing(true);
-        convertImageToCoordinateArray(file, height, width)
+        convertImageToCoordinateArray(file, height, width, matchImageAspectRatio)
             .then((coordinateData) => {
-                const { initialAliveCoordinates, initialVisitedCoordinates } = coordinateData;
-                setFormValues((prev) => ({ ...prev, initialAliveCoordinates, initialVisitedCoordinates }));
+                const { initialAliveCoordinates, initialVisitedCoordinates, height } = coordinateData;
+                setFormValues((prev) => ({
+                    ...prev,
+                    environmentHeight: height,
+                    initialAliveCoordinates,
+                    initialVisitedCoordinates,
+                }));
             })
             .catch((e) => {
                 setError((prev) => prev + ' ' + e);
@@ -69,7 +74,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
 
     function onFileUpload(file: File, height: number, width: number): boolean {
         setFormValues((prev) => ({ ...prev, uploadFile: file }));
-        calculateImageToCoordinateArray(file, height, width);
+        calculateImageToCoordinateArray(file, height, width, true);
         return false;
     }
 
