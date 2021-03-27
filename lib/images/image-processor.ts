@@ -1,8 +1,9 @@
-import { EnvironmentCoordinate } from '../../models/game-of-life-cell';
+import { EnvironmentCoordinate } from '../../models/gameoflife/game-of-life-cell';
 
 const RED_GREYSCALE_WEIGHT = 0.299;
 const GREEN_GREYSCALE_WEIGHT = 0.587;
 const BLUE_GREYSCALE_WEIGHT = 0.114;
+const ALLOWED_SRC_TYPES = ['jpg', 'jpeg', 'png'];
 
 export interface ImageCoordinateArrayData {
     initialAliveCoordinates: EnvironmentCoordinate[];
@@ -12,52 +13,51 @@ export interface ImageCoordinateArrayData {
 }
 
 export function convertImageToCoordinateArray(
-    imageFile: File,
+    srcOrFile: string | File,
     targetHeight: number,
     targetWidth: number,
     matchImageAspectRatio = false
 ): Promise<ImageCoordinateArrayData> {
-    return getImageData(imageFile, targetHeight, targetWidth, matchImageAspectRatio)
-    .then((loadedImageData: { imageData: ImageData; height: number; width: number }) => {
+    return getImageData(srcOrFile, targetHeight, targetWidth, matchImageAspectRatio).then(
+        (loadedImageData: { imageData: ImageData; height: number; width: number }) => {
+            const { imageData, width, height } = loadedImageData;
+            const aliveCoords: EnvironmentCoordinate[] = [];
+            const visitedCoords: EnvironmentCoordinate[] = [];
+            const greyScaleValues = Array.from(Array(targetHeight), () => Array(targetWidth).fill(0));
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                const row = Math.floor(i / (imageData.width * 4));
+                const column = Math.floor((i % (imageData.width * 4)) / 4);
+                const greyScaleValue =
+                    RED_GREYSCALE_WEIGHT * imageData.data[i] +
+                    GREEN_GREYSCALE_WEIGHT * imageData.data[i + 1] +
+                    BLUE_GREYSCALE_WEIGHT * imageData.data[i + 2];
 
-        const { imageData, width, height } = loadedImageData;
-        const aliveCoords: EnvironmentCoordinate[] = [];
-        const visitedCoords: EnvironmentCoordinate[] = [];
-        const greyScaleValues = Array.from(Array(targetHeight), () => Array(targetWidth).fill(0));
-        for (let i = 0; i < imageData.data.length; i += 4) {
-            const row = Math.floor(i / (imageData.width * 4));
-            const column = Math.floor((i % (imageData.width * 4)) / 4);
-            const greyScaleValue =
-                RED_GREYSCALE_WEIGHT * imageData.data[i] +
-                GREEN_GREYSCALE_WEIGHT * imageData.data[i + 1] +
-                BLUE_GREYSCALE_WEIGHT * imageData.data[i + 2];
+                if (greyScaleValue < 125) {
+                    // consider darkest pixels alive
+                    aliveCoords.push([row, column]);
+                } else if (greyScaleValue < 170) {
+                    //consider medium dark pixels visited
+                    visitedCoords.push([row, column]);
+                }
+                // all other pixels will be considered dead
 
-            if (greyScaleValue < 125) {
-                // consider darkest pixels alive
-                aliveCoords.push([row, column]);
-            } else if (greyScaleValue < 170) {
-                //consider medium dark pixels visited
-                visitedCoords.push([row, column]);
+                if (row < targetHeight && column < targetWidth) {
+                    greyScaleValues[row][column] = greyScaleValue;
+                }
             }
-            // all other pixels will be considered dead
 
-            if (row < targetHeight && column < targetWidth) {
-                greyScaleValues[row][column] = greyScaleValue;
-            }
+            return { initialAliveCoordinates: aliveCoords, initialVisitedCoordinates: visitedCoords, height, width };
         }
-
-        return { initialAliveCoordinates: aliveCoords, initialVisitedCoordinates: visitedCoords, height, width };
-    });
+    );
 }
 
 function getImageData(
-    file: File,
+    srcOrFile: string | File,
     targetHeight: number,
     targetWidth: number,
     matchImageAspectRatio: boolean
 ): Promise<{ imageData: ImageData; height: number; width: number }> {
-    return getImage(file).then((image: HTMLImageElement) => {
-
+    return getImage(srcOrFile).then((image: HTMLImageElement) => {
         const originalHeight = image.height;
         const originalWidth = image.width;
         const adjustedTargetHeight = matchImageAspectRatio ? Math.round((originalHeight / originalWidth) * targetWidth) : targetHeight;
@@ -84,7 +84,15 @@ function getImageData(
     });
 }
 
-function getImage(file: File): Promise<HTMLImageElement> {
+function getImage(srcOrFile: string | File): Promise<HTMLImageElement> {
+    if (typeof srcOrFile === 'string') {
+        return getImageFromSrc(srcOrFile);
+    } else {
+        return getImageFromFile(srcOrFile);
+    }
+}
+
+function getImageFromFile(file: File): Promise<HTMLImageElement> {
     const reader = new FileReader();
     const image = new Image();
     return new Promise((resolve, reject) => {
@@ -92,11 +100,30 @@ function getImage(file: File): Promise<HTMLImageElement> {
             reader.onload = function () {
                 // file is loaded
                 image.src = reader.result as string;
-                image.onload = function (event) {
+                image.onload = function () {
                     resolve(image);
                 };
             };
             reader.readAsDataURL(file);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function getImageFromSrc(src: string): Promise<HTMLImageElement> {
+    const image = new Image();
+    const fileExtension = src.split('.').slice(-1);
+    if (ALLOWED_SRC_TYPES.includes(fileExtension)) {
+        image.crossOrigin = 'anonymous';
+    }
+    return new Promise((resolve, reject) => {
+        try {
+            image.src = src;
+            image.onload = function () {
+                console.log(image);
+                resolve(image);
+            };
         } catch (e) {
             reject(e);
         }

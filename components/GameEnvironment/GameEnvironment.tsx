@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './GameEnvironment.module.scss';
-import { GameOfLifeEnvironment } from '../../models/game-of-life-environment';
+import { GameOfLifeEnvironment } from '../../models/gameoflife/game-of-life-environment';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSettings } from '../../store/settings/settingsSelectors';
 import { resetGame, startGame, startGameSuccess, stopGame, stopGameSuccess } from '../../store/controls/controlsAction';
@@ -8,6 +7,7 @@ import { getGameStatus } from '../../store/controls/controlsSelectors';
 import { GameStatus } from '../../store/controls/controlsReducer';
 import { Spin } from 'antd';
 import { PlayCircleTwoTone, PauseCircleTwoTone } from '@ant-design/icons';
+import styles from './GameEnvironment.module.scss';
 
 export default function GameEnvironment(): JSX.Element {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

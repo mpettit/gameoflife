@@ -1,0 +1,14 @@
+@import '../../styles/variables.scss';
+
+.item {
+    padding: 5px;
+}
+
+.selected {
+    @extend .item;
+    border: 3px solid $primary;
+}
+
+.title {
+    text-align: center;
+}

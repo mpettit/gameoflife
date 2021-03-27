@@ -1,0 +1,21 @@
+.noResultContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 15px;
+    justify-content: center;
+
+    .icon {
+        font-size: 24px;
+    }
+}
+
+.itemContainer {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+}
+
+.margin5 {
+    margin: 5;
+}

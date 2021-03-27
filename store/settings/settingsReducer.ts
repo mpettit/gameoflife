@@ -1,9 +1,11 @@
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import { AnyAction } from 'redux';
 import { GameOfLifeSettingsActionType } from './settingsActions';
+import { MovieSearchResult } from '../../models/movie/movie-search-result';
 
 export interface GameOfLifeSettingsState extends GameOfLifeSettings {
     uploadFile?: File,
+    selectedMovie?: MovieSearchResult,
 };
 
 const initialState: GameOfLifeSettingsState = {

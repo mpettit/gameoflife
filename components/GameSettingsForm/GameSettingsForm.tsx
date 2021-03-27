@@ -2,14 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ColorInput from '../ColorInput/ColorInput';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import { Row, Col, Button, Checkbox, InputNumber, Upload, Spin, Typography } from 'antd';
+import { Row, Col, Button, Checkbox, Image, Input, InputNumber, Upload, Spin, Typography, Divider } from 'antd';
 import styles from './GameSettingsForm.module.scss';
 import { GameOfLifeSettings } from '../../models/game-of-life-settings';
 import OkCancel from '../OkCancel/OkCancel';
 import * as yup from 'yup';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { convertImageToCoordinateArray } from '../../lib/images/image-processor';
+import { MovieSearchResult } from '../../models/movie/movie-search-result';
+import MovieSelect from '../MovieSelect/MovieSelect';
+import Collapsible from 'react-collapsible';
+import axios from 'axios';
+import { GameOfLifeSettingsState } from '../../store/settings/settingsReducer';
 
+const { Search } = Input;
 const { Title } = Typography;
 interface GameSettingsFormProps {
     applyText: string;
@@ -39,14 +45,15 @@ const formSchema = yup
     .noUnknown(false);
 
 const sectionLevel = 5;
-const fullRow = 24;
 const formLayoutSpan = { label: 5, input: 19, inputWithCheckbox: 12, checkbox: 7 };
 
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
-    const [error, setError] = useState<string | undefined>(undefined);
-    const [isImageProcessing, setIsImageProcessing] = useState(false);
-    const [formValues, setFormValues] = useState(settings);
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [formValues, setFormValues] = useState<GameOfLifeSettingsState>(settings);
+    const [movieQuery, setMovieQuery] = useState('')
+    const [movieSearchResults, setMovieSearchResults] = useState([]);
 
     useEffect(() => {
         // update form values whenever state settings change
@@ -56,9 +63,9 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
         }));
     }, [settings]);
 
-    function calculateImageToCoordinateArray(file: File, height: number, width: number, matchImageAspectRatio = false): void {
-        setIsImageProcessing(true);
-        convertImageToCoordinateArray(file, height, width, matchImageAspectRatio)
+    function calculateImageToCoordinateArray(srcOrFile: string | File, height: number, width: number, matchImageAspectRatio = false): void {
+        setIsLoading(true);
+        convertImageToCoordinateArray(srcOrFile, height, width, matchImageAspectRatio)
             .then((coordinateData) => {
                 const { initialAliveCoordinates, initialVisitedCoordinates, height } = coordinateData;
                 setFormValues((prev) => ({
@@ -69,11 +76,42 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                 }));
             })
             .catch((e) => {
-                setError((prev) => prev + ' ' + e);
+                setError(e);
             })
             .finally(() => {
-                setIsImageProcessing(false);
+                setIsLoading(false);
             });
+    }
+
+    function onSearchByMovieTitle(title: string): void {
+
+        setMovieQuery(title);
+
+        if (title.length == 0) {
+            return setMovieSearchResults([]);
+        }
+
+        setIsLoading(true);
+        setMovieQuery(title);
+
+        return axios
+            .get('/api/movies', { params: { title } })
+            .then((response) => response.data)
+            .then(({ results }) => {
+                setMovieSearchResults(results);
+            })
+            .catch((e) => {
+                setError(e);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }
+
+    function onMovieSelected(movie: MovieSearchResult): void {
+        setFormValues((prev) => ({ ...prev, selectedMovie: movie }));
+        const { Poster: posterSrc } = movie;
+        calculateImageToCoordinateArray(posterSrc, formValues.environmentHeight, formValues.environmentWidth, true);
     }
 
     function onFileUpload(file: File, height: number, width: number): boolean {
@@ -87,7 +125,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
     }
 
     function validateAndApply(): void {
-        if (isImageProcessing) {
+        if (isLoading) {
             setError('Image is still processing');
             return;
         }
@@ -213,13 +251,30 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     </Checkbox>
                 </Col>
             </Row>
-            <Title level={sectionLevel}>Starting State</Title>
+            <Title level={sectionLevel}>Initial State</Title>
+            <Row className={styles.formElement}>
+                <Col span={formLayoutSpan.label} className={styles.formLabel}>
+                    movie:
+                </Col>
+                <Col span={formLayoutSpan.input} className={styles.formInput}>
+                    <Search
+                        placeholder="search by movie title"
+                        allowClear
+                        loading={isLoading}
+                        onSearch={(query) => onSearchByMovieTitle(query)}
+                    />
+                </Col>
+            </Row>
+            <Collapsible open={movieQuery.length > 0}>
+                <MovieSelect options={movieSearchResults} value={formValues.selectedMovie} onSelect={(movie) => onMovieSelected(movie)} />
+            </Collapsible>
+            <Divider>or</Divider>
             <Row className={styles.formElement}>
                 <Col span={formLayoutSpan.label} className={styles.formLabel}>
                     image:
                 </Col>
                 <Col span={formLayoutSpan.input} className={styles.formInput}>
-                    <Spin spinning={isImageProcessing} indicator={<LoadingOutlined spin />}>
+                    <Spin spinning={isLoading} indicator={<LoadingOutlined spin />}>
                         <Upload
                             accept="image/png, image/jpeg"
                             onRemove={() => onFileRemove()}
@@ -228,7 +283,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                             beforeUpload={(file) => onFileUpload(file, formValues.environmentHeight, formValues.environmentWidth)}
                         >
                             <Button disabled={formValues.uploadFile !== undefined} icon={<UploadOutlined />}>
-                                Select File
+                                select File
                             </Button>
                         </Upload>
                     </Spin>
