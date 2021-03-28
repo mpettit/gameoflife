@@ -1,6 +1,6 @@
 import { GameofLifeCell } from './game-of-life-cell';
 import { GameOfLifeSettings } from './game-of-life-settings';
-import { EnvironmentCoordinate } from '../models/game-of-life-cell';
+import { EnvironmentCoordinate } from './game-of-life-cell';
 
 export class GameOfLifeEnvironment {
     private _cells: GameofLifeCell[];

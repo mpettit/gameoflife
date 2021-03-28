@@ -113,7 +113,8 @@ function getImageFromFile(file: File): Promise<HTMLImageElement> {
 
 function getImageFromSrc(src: string): Promise<HTMLImageElement> {
     const image = new Image();
-    const fileExtension = src.split('.').slice(-1);
+    const splitSrc = src.split('.');
+    const fileExtension = splitSrc.length > 0 ? splitSrc[splitSrc.length - 1] : '';
     if (ALLOWED_SRC_TYPES.includes(fileExtension)) {
         image.crossOrigin = 'anonymous';
     }
@@ -121,8 +122,10 @@ function getImageFromSrc(src: string): Promise<HTMLImageElement> {
         try {
             image.src = src;
             image.onload = function () {
-                console.log(image);
                 resolve(image);
+            };
+            image.onerror = function () {
+                reject('Cannot load image');
             };
         } catch (e) {
             reject(e);

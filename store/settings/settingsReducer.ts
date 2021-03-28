@@ -1,4 +1,4 @@
-import { GameOfLifeSettings } from '../../models/game-of-life-settings';
+import { GameOfLifeSettings } from '../../models/gameoflife/game-of-life-settings';
 import { AnyAction } from 'redux';
 import { GameOfLifeSettingsActionType } from './settingsActions';
 import { MovieSearchResult } from '../../models/movie/movie-search-result';

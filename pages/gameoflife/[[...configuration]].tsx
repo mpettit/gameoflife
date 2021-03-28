@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { GameOfLifeSettings } from '../../models/game-of-life-settings';
+import { GameOfLifeSettings } from '../../models/gameoflife/game-of-life-settings';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { Drawer } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';

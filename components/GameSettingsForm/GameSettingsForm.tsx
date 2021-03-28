@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ColorInput from '../ColorInput/ColorInput';
 import { getSettings } from '../../store/settings/settingsSelectors';
-import { Row, Col, Button, Checkbox, Image, Input, InputNumber, Upload, Spin, Typography, Divider } from 'antd';
+import { Row, Col, Button, Checkbox, Input, InputNumber, Upload, Spin, Typography, Divider } from 'antd';
 import styles from './GameSettingsForm.module.scss';
-import { GameOfLifeSettings } from '../../models/game-of-life-settings';
+import { GameOfLifeSettings } from '../../models/gameoflife/game-of-life-settings';
 import OkCancel from '../OkCancel/OkCancel';
 import * as yup from 'yup';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -49,10 +49,10 @@ const formLayoutSpan = { label: 5, input: 19, inputWithCheckbox: 12, checkbox: 7
 
 export default function GameSettingsForm({ applyText, onApply, cancelText, onCancel }: GameSettingsFormProps): JSX.Element {
     const settings = useSelector(getSettings);
-    const [error, setError] = useState('');
+    const [error, setError] = useState(''); //TODO: need to clear errors
     const [isLoading, setIsLoading] = useState(false);
     const [formValues, setFormValues] = useState<GameOfLifeSettingsState>(settings);
-    const [movieQuery, setMovieQuery] = useState('')
+    const [movieQuery, setMovieQuery] = useState('');
     const [movieSearchResults, setMovieSearchResults] = useState([]);
 
     useEffect(() => {
@@ -84,24 +84,25 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
     }
 
     function onSearchByMovieTitle(title: string): void {
-
         setMovieQuery(title);
 
         if (title.length == 0) {
             return setMovieSearchResults([]);
+            setIsLoading(false);
         }
 
         setIsLoading(true);
-        setMovieQuery(title);
 
-        return axios
-            .get('/api/movies', { params: { title } })
+        axios
+            .get('/api/get-movies', { params: { title } })
             .then((response) => response.data)
             .then(({ results }) => {
                 setMovieSearchResults(results);
             })
             .catch((e) => {
-                setError(e);
+                console.log('axios caught error');
+                console.log(e);
+                // setError(e);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -265,7 +266,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                     />
                 </Col>
             </Row>
-            <Collapsible open={movieQuery.length > 0}>
+            <Collapsible trigger="" open={movieQuery.length > 0}>
                 <MovieSelect options={movieSearchResults} value={formValues.selectedMovie} onSelect={(movie) => onMovieSelected(movie)} />
             </Collapsible>
             <Divider>or</Divider>
@@ -283,7 +284,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
                             beforeUpload={(file) => onFileUpload(file, formValues.environmentHeight, formValues.environmentWidth)}
                         >
                             <Button disabled={formValues.uploadFile !== undefined} icon={<UploadOutlined />}>
-                                select File
+                                select file
                             </Button>
                         </Upload>
                     </Spin>
@@ -291,7 +292,7 @@ export default function GameSettingsForm({ applyText, onApply, cancelText, onCan
             </Row>
 
             <div className={styles.buttonContainer}>
-                <OkCancel applyText={applyText} onApply={() => validateAndApply()} cancelText={cancelText} onCancel={onCancel} />
+                <OkCancel okText={applyText} okDisabled={isLoading} onOk={() => validateAndApply()} cancelText={cancelText} onCancel={onCancel} />
             </div>
         </>
     );

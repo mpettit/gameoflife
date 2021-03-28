@@ -6,12 +6,14 @@
     .formLabel {
         display: flex;
         align-items: center;
+        justify-content: end;
     }
 
     .formInput {
         display: flex;
         flex-direction: row;
         align-items: center;
+        padding-left: 10px;
 
         & > * {
             margin-left: 5px;
