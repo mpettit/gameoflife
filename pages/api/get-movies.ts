@@ -8,8 +8,7 @@ import { QueriesSchema } from '../../models/schemas/queries-schema';
 const firestore = firebase.firestore();
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export default async function handler(req: NextApiRequest, res: NextApiResponse<{ results: MovieSearchResult[] }>) {
-
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         const title = (req.query.title as string).trim().toLowerCase();
 
@@ -24,12 +23,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             return transaction
                 .get(queryDocRef)
-                .then((querySnapshot: DocumentSnapshot<QueriesSchema>) => {
+                .then((querySnapshot) => {
                     const currentTimestamp = formatISO(Date.now());
 
                     // if query already exists, return increment times queried + return data
-                    if (querySnapshot.exists) {
-                        const queryData: QueriesSchema = querySnapshot.data();
+                    if (querySnapshot.exists && querySnapshot.data()) {
+                        const queryData  = querySnapshot.data() as QueriesSchema;
                         const { imdbIDs } = queryData;
 
                         console.log(`Received ${imdbIDs.length} ids for query "${title}" from db.`);
@@ -46,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                             .where('imdbID', 'in', imdbIDs)
                             .get()
                             .then((movieQuerySnapshot) => {
-                                return movieQuerySnapshot.docs.map((snapshot) => snapshot.data());
+                                return movieQuerySnapshot.docs.map((snapshot) => snapshot.data() as MoviesSchema);
                             });
                     } else {
                         // otherwise, make api query, update db, and return results
@@ -54,6 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                         const movieDataURL = `${process.env.OMDB_API_URL}?apiKey=${process.env.OMDB_API_KEY}&s=${title}&type=movie`;
                         return axios.get(movieDataURL).then((movieResponse) => {
                             const results: MovieSearchResult[] = movieResponse.data?.Search || [];
+                            const resultsForDb: MoviesSchema[] = results.map(result => ({ ...result, timeAddedAt: currentTimestamp }));
 
                             console.log(`Received ${results.length} results for query "${title}" from OMDB API. Saving to db...`);
 
@@ -61,16 +61,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                                 console.log(`Received ${results.length} results for query "${title}" from OMDB API. Saving to db...`);
 
                                 // add all search results to movies collection
-                                results.forEach((result) => {
-                                    const movieRef = firestore.collection('movies').doc(result.imdbID);
-                                    transaction.set(movieRef, { ...result, timeAddedAt: currentTimestamp } as MoviesSchema, {
+                                resultsForDb.forEach((movieData) => {
+                                    const movieRef = firestore.collection('movies').doc(movieData.imdbID);
+                                    transaction.set(movieRef, movieData, {
                                         merge: true,
                                     });
                                 });
 
                                 // finally, tag movie results to query in queries collection
                                 transaction.set(queryDocRef, {
-                                    imdbIDs: results.map((result) => result.imdbID),
+                                    imdbIDs: resultsForDb.map((movieData) => movieData.imdbID),
                                     timesQueried: 1,
                                     timeAddedAt: currentTimestamp,
                                     lastQueriedAt: currentTimestamp,
@@ -79,11 +79,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                                 console.log(`Received ${results.length} results for query "${title}" from OMDB API. No save necessary.`);
                             }
 
-                            return results;
+                            return resultsForDb;
                         });
                     }
                 })
-                .then((results: MovieSearchResult[]) => {
+                .then((dbResults: MoviesSchema[]) => {
+                    const results = dbResults as MovieSearchResult[]
                     res.status(200).json({ results });
                 })
                 .catch((error) => {
