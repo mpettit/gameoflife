@@ -65,16 +65,14 @@ export class GameOfLifeEnvironment {
 
     draw(): void {
         // prerender differences from last generation then apply
-        requestAnimationFrame(() => {
-            const preRenderCanvas = document.createElement('canvas');
-            preRenderCanvas.height = this._canvasHeight;
-            preRenderCanvas.width = this._canvasWidth;
-            const preRenderContext = preRenderCanvas.getContext('2d');
-            this._cells.forEach((cell) => cell.draw(preRenderContext));
-            if (this._context !== undefined) {
-                this._context.drawImage(preRenderCanvas, 0, 0);
-            }
-        });
+        const preRenderCanvas = document.createElement('canvas');
+        preRenderCanvas.height = this._canvasHeight;
+        preRenderCanvas.width = this._canvasWidth;
+        const preRenderContext = preRenderCanvas.getContext('2d');
+        this._cells.forEach((cell) => cell.draw(preRenderContext));
+        if (this._context !== undefined) {
+            this._context.drawImage(preRenderCanvas, 0, 0);
+        }
     }
 
     private getCell(row: number, column: number): GameofLifeCell | undefined {

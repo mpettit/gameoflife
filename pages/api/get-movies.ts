@@ -11,7 +11,7 @@ const firestore = firebase.firestore();
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{ results: MovieSearchResult[] }>) {
 
     if (req.method === 'GET') {
-        const title = (req.query.title as string).toLowerCase();
+        const title = (req.query.title as string).trim().toLowerCase();
 
         if (!title) {
             res.status(400).send('Bad Request!');
@@ -95,62 +95,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         return Promise.resolve();
     }
 }
-
-//     .collection("queries")
-//         .ref(`/queries/${title}`)
-//         .once('value')
-//         .then(async (snapshot) => {
-//             const currentTimestamp = formatISO(Date.now());
-
-//             if (snapshot.exists()) {
-//                 // if query already exists, return increment times queried + return data
-//                 const queryData: MovieQueryData = snapshot.val();
-//                 const results = queryData.results;
-
-//                 console.log(`Received ${results.length} results for query "${title}" from db.`);
-
-//                 database.ref(`/queries/${title}`).update(
-//                     {
-//                         ...queryData,
-//                         timesQueriedAt: queryData.timesQueriedAt + 1,
-//                         lastQueriedAt: currentTimestamp,
-//                     },
-//                     (error) => {
-//                         if (error) {
-//                             console.log(`Error incrementing timesQueried for query "${title}": ${error}`);
-//                             res.status(500).end(); //TODO: add error message?
-//                         } else {
-//                             res.status(200).json({ results });
-//                         }
-//                     }
-//                 );
-//             } else {
-//                 // otherwise, make api query, update db, and return results
-//                 console.log(`No results for query ${title} from db. Querying OMDB API`);
-
-//                 const movieDataURL = `${process.env.OMDB_API_URL}?apiKey=${process.env.OMDB_API_KEY}&s=${title}&type=movie`;
-//                 const movieResponse = await axios.get(movieDataURL);
-//                 const results: MovieSearchResult[] = movieResponse.data?.Search || [];
-
-//                 console.log(`Received ${results.length} results for query "${title}" from OMDB API. Saving to db...`);
-
-//                 database.ref(`/queries/${title}`).set(
-//                     {
-//                         results,
-//                         timesQueried: 1,
-//                         timeAddedAt: currentTimestamp,
-//                         lastQueriedAt: currentTimestamp,
-//                     },
-//                     (error) => {
-//                         if (error) {
-//                             console.log(`Error saving query results for "${title}" to db: ${error}`);
-//                             res.status(500).end(); //TODO: add error message?
-//                         } else {
-//                             res.status(200).json({ results });
-//                         }
-//                     }
-//                 );
-//             }
-//         });
-// } else {
-//     res.status(405).end();
